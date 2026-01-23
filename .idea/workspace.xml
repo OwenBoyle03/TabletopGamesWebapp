@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="a58d7e7d-0c5c-409f-bbe0-a02f65f42c4f" name="Changes" comment="Re-added a node module license" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="package.json" />
+        <option value="HTML File" />
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;OwenBoyle03&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/OwenBoyle03/BoardGamePlayingWebsite.git&quot;,
+    &quot;accountId&quot;: &quot;94a7bf88-b34d-4188-bab1-15813cbbe964&quot;
+  }
+}</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="2yQk6Q5r1RgJ8RXOPHUm8ZSE5vd" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "ignore.virus.scanning.warn.message": "true",
+    "javascript.nodejs.core.library.configured.version": "24.12.0",
+    "javascript.nodejs.core.library.typings.version": "24.10.4",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/Uni/Personal Projects/BoardGamePlayingWebsite",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "onboarding.tips.debug.path": "E:/Uni/Personal Projects/KnockOffCards/views/src/Main.java",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
+    "ts.external.directory.path": "C:\\Users\\oweny\\AppData\\Roaming\\JetBrains\\IntelliJIdea2025.3\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Uni\Personal Projects\BoardGamePlayingWebsite" />
+      <recent name="D:\Uni\Personal Projects\BoardGamePlayingWebsite\.idea" />
+      <recent name="D:\Uni\Personal Projects\KnockOffCards" />
+      <recent name="G:\Other computers\My computer\Uni\Personal Projects\KnockOffCards\public\js" />
+      <recent name="E:\Uni\Personal Projects\KnockOffCards\views" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Uni\Personal Projects\BoardGamePlayingWebsite" />
+      <recent name="D:\Uni\Personal Projects\BoardGamePlayingWebsite\.idea" />
+      <recent name="E:\Uni\Personal Projects\KnockOffCards" />
+      <recent name="E:\Uni\Personal Projects\KnockOffCards\src" />
+      <recent name="E:\Uni\Personal Projects\KnockOffCards\public" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.30387.90" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a58d7e7d-0c5c-409f-bbe0-a02f65f42c4f" name="Changes" comment="" />
+      <created>1749774012394</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1749774012394</updated>
+      <workItem from="1749774013372" duration="181000" />
+      <workItem from="1749774310009" duration="284000" />
+      <workItem from="1749774834934" duration="2557000" />
+      <workItem from="1749856410902" duration="9321000" />
+      <workItem from="1751116352590" duration="7537000" />
+      <workItem from="1751131593647" duration="652000" />
+      <workItem from="1752002009208" duration="383000" />
+      <workItem from="1752002594565" duration="963000" />
+      <workItem from="1752534146101" duration="8499000" />
+      <workItem from="1752549052724" duration="22000" />
+      <workItem from="1752599703924" duration="1405000" />
+      <workItem from="1752678153789" duration="26586000" />
+      <workItem from="1752891750495" duration="2057000" />
+      <workItem from="1753476053313" duration="77000" />
+      <workItem from="1753476236928" duration="3567000" />
+      <workItem from="1753566762433" duration="3192000" />
+      <workItem from="1754657273325" duration="3580000" />
+      <workItem from="1754664580627" duration="224000" />
+      <workItem from="1754770959077" duration="3375000" />
+      <workItem from="1755981909718" duration="2951000" />
+      <workItem from="1756581639863" duration="1431000" />
+      <workItem from="1756584120830" duration="3807000" />
+      <workItem from="1756929796191" duration="1214000" />
+      <workItem from="1758306948078" duration="1472000" />
+      <workItem from="1758320272487" duration="167000" />
+      <workItem from="1761016984187" duration="129000" />
+      <workItem from="1761017268337" duration="5840000" />
+      <workItem from="1761749666013" duration="1362000" />
+      <workItem from="1761752664243" duration="2478000" />
+      <workItem from="1762099506293" duration="11518000" />
+      <workItem from="1762174155857" duration="20932000" />
+      <workItem from="1762282643610" duration="7011000" />
+      <workItem from="1762344859931" duration="6903000" />
+      <workItem from="1762533808016" duration="572000" />
+      <workItem from="1762542409457" duration="12866000" />
+      <workItem from="1762626415081" duration="3150000" />
+      <workItem from="1762635964852" duration="2918000" />
+      <workItem from="1762641870185" duration="1331000" />
+      <workItem from="1762713183007" duration="9400000" />
+      <workItem from="1762788587735" duration="4809000" />
+      <workItem from="1762877909888" duration="2397000" />
+      <workItem from="1762955365478" duration="1828000" />
+      <workItem from="1762969622309" duration="803000" />
+      <workItem from="1762975741250" duration="4984000" />
+      <workItem from="1763132739987" duration="2631000" />
+      <workItem from="1763327330643" duration="8366000" />
+      <workItem from="1763393432955" duration="5261000" />
+      <workItem from="1763400855263" duration="1802000" />
+      <workItem from="1763567799772" duration="3615000" />
+      <workItem from="1764404754038" duration="358000" />
+      <workItem from="1764405317938" duration="1195000" />
+      <workItem from="1764743043981" duration="31000" />
+      <workItem from="1764743107281" duration="101000" />
+      <workItem from="1764760980841" duration="3316000" />
+      <workItem from="1764768674135" duration="119000" />
+      <workItem from="1764779301330" duration="2134000" />
+      <workItem from="1764846924323" duration="2708000" />
+      <workItem from="1765120365673" duration="917000" />
+      <workItem from="1765121337690" duration="915000" />
+      <workItem from="1765280125667" duration="3525000" />
+      <workItem from="1765287091953" duration="1516000" />
+      <workItem from="1765365776224" duration="2732000" />
+      <workItem from="1765380916661" duration="4318000" />
+      <workItem from="1765722599234" duration="268000" />
+      <workItem from="1765723038092" duration="3902000" />
+      <workItem from="1765727602013" duration="5532000" />
+      <workItem from="1765904284536" duration="1630000" />
+      <workItem from="1765909209059" duration="13943000" />
+      <workItem from="1765998189486" duration="8470000" />
+      <workItem from="1766160902911" duration="39000" />
+      <workItem from="1766160950845" duration="90000" />
+      <workItem from="1766162917755" duration="7000" />
+      <workItem from="1766201277771" duration="178000" />
+      <workItem from="1766201466059" duration="71000" />
+      <workItem from="1766881358962" duration="1308000" />
+      <workItem from="1767059104654" duration="1158000" />
+      <workItem from="1767123258115" duration="10413000" />
+      <workItem from="1767148436404" duration="6318000" />
+      <workItem from="1767402149993" duration="6502000" />
+      <workItem from="1767467399735" duration="5158000" />
+      <workItem from="1768839426561" duration="499000" />
+      <workItem from="1768839965683" duration="2961000" />
+      <workItem from="1768846131481" duration="1344000" />
+      <workItem from="1768847602632" duration="2321000" />
+      <workItem from="1768850004877" duration="165000" />
+      <workItem from="1768850223323" duration="4500000" />
+      <workItem from="1768922865036" duration="4867000" />
+      <workItem from="1769008612528" duration="10290000" />
+      <workItem from="1769183092132" duration="696000" />
+      <workItem from="1769184053116" duration="6192000" />
+      <workItem from="1769206824074" duration="1527000" />
+      <workItem from="1769208399957" duration="26000" />
+    </task>
+    <task id="LOCAL-00001" summary="Initial Commit">
+      <option name="closed" value="true" />
+      <created>1768848601265</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1768848601265</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Test commit">
+      <option name="closed" value="true" />
+      <created>1768848814222</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1768848814222</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Added node_modules to git ignore">
+      <option name="closed" value="true" />
+      <created>1768849266637</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1768849266637</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Initial commit">
+      <option name="closed" value="true" />
+      <created>1768850637858</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1768850637858</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Initial commit">
+      <option name="closed" value="true" />
+      <created>1768852092114</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1768852092114</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Initial commit">
+      <option name="closed" value="true" />
+      <created>1769207185567</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1769207185567</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Initial commit">
+      <option name="closed" value="true" />
+      <created>1769207784069</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1769207784069</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Re-added a node module license">
+      <option name="closed" value="true" />
+      <created>1769208265661</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1769208265661</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Initial Commit" />
+    <MESSAGE value="Test commit" />
+    <MESSAGE value="Added node_modules to git ignore" />
+    <MESSAGE value="Initial commit" />
+    <MESSAGE value="Re-added a node module license" />
+    <option name="LAST_COMMIT_MESSAGE" value="Re-added a node module license" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/views/src/Main.java</url>
+          <line>11</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

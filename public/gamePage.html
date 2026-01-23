@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cards Against Humanity</title>
+    <link rel="stylesheet" href="./css/index.css">
+</head>
+
+<body>
+
+<h1 id="waitingScreen">Awaiting Host</h1>
+
+<div id="main">
+    <!-- <h1></h1> -->
+    <div id="topLine">
+        <div id="blackCard"></div>
+
+        <div id="responses">
+            <!-- <canvas id="titleCanvas" width="1000" height="1000"></canvas> -->
+        </div>
+    </div>
+
+    <br><br>
+
+    <div id="playerCards"></div>
+</div>
+
+<div id="submitButtonDiv">
+    <form id="submitForm" action="/api/submitCards" method="post">
+        <input type="hidden" name="submitCards" id="submitCardsInput">
+    </form>
+
+    <button id="submitButton" hidden>Submit Cards</button>
+</div>
+
+<div id="bottomOfPage"></div>
+
+</body>
+
+<!--
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
+-->
+<script src="./js/GameModel.js"></script>
+<script src="./js/ViewCard.js"></script>
+<script src="./js/GameView.js"></script>
+<script src="./js/GameController.js"></script>
+
+</html>

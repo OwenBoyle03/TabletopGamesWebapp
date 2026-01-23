@@ -1,0 +1,45 @@
+html {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    text-align: center;
+    background-color: #242526;
+    color: white;
+}
+
+body {
+    margin: 0;
+    /*height: 100%;*/
+    overflow: hidden;
+}
+
+#main {
+    padding: 1vh;
+    justify-content: center;
+    align-items: center;
+}
+
+canvas {
+    /*height: 38vw;*/
+    height: 30vh;
+    width: auto;
+    max-width: fit-content;
+}
+
+#lobbies {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 5vmin;
+    /*padding: 1vmin;*/
+}
+
+#lobbies canvas {
+    height: 26vh;
+    width: auto;
+}
+
+.centered {
+    /*display: flex;*/
+    justify-items: center;
+    align-items: center;
+}

@@ -1,0 +1,70 @@
+html {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    text-align: center;
+    background-color: #242526;
+    color: white;
+}
+
+body {
+    margin: 0;
+    /*height: 100%;*/
+    overflow: hidden;
+}
+
+#main {
+    padding: 1vh;
+    justify-content: center;
+    align-items: center;
+}
+
+#gameArea {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #6B6B6B;
+    padding: 1vmin;
+    border: solid #008080 0.8vmin;
+}
+
+canvas {
+    /*height: 38vw;*/
+    height: 30vh;
+    width: auto;
+    max-width: fit-content;
+}
+
+#topLine {
+    display: flex;
+}
+
+#blackCard {
+
+}
+
+#responses canvas {
+    padding-left: 1vh;
+}
+
+#playerCards {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 1vmin;
+    /*padding: 1vmin;*/
+}
+
+#playerCards canvas {
+    height: 26vh;
+    width: auto;
+}
+
+.centered {
+    /*display: flex;*/
+    justify-content: center;
+    align-items: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+}

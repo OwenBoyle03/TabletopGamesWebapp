@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Choose an ongoing game</title>
+    <link rel="stylesheet" href="../css/chooseLobby.css">
+</head>
+
+<body>
+
+    <h1>Board Games</h1>
+
+    <br><br>
+
+    <div class="centered">
+
+    <div id="main">
+
+        <form id="joinLobbyForm" action="/joinLobby" method="post">
+            <input type="hidden" name="lobbyId" id="lobbyIdInput">
+        </form>
+
+        <div id="lobbies">
+
+        </div>
+
+    </div>
+    </div>
+
+    <script src="../js/ViewCard.js"></script>
+    <script src="../js/LobbyCardsView.js"></script>
+    <script src="../js/LobbyCardsController.js"></script>
+
+
+</body>
+</html>

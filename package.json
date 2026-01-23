@@ -1,0 +1,22 @@
+{
+  "name": "boardgames",
+  "version": "1.0.0",
+  "description": "",
+  "main": "public/js/GameController.js",
+  "scripts": {
+    "start": "node GameController.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "private": true,
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "csv-parser": "^3.2.0",
+    "express": "^5.1.0",
+    "express-validator": "^7.3.0",
+    "multer": "^2.0.2",
+    "pug": "^3.0.3",
+    "socket.io": "^4.8.1",
+    "uuid": "^13.0.0",
+    "ws": "^8.19.0"
+  }
+}
