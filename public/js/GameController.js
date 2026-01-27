@@ -1,4 +1,5 @@
 'use strict'
+import { WebSocket } from "ws";
 
 //const socket = io();
 
@@ -10,6 +11,8 @@ const view = new GameView();
 
 let clickedResponseCards = [];
 let clickedPlayerCards = [];
+
+const ws = new WebSocket('ws://localhost:3000');
 
 /*
 view.checkForResponseCardClick(responseCardClicked);
@@ -170,3 +173,17 @@ async function gameLoop(gameStateData) {
 
     }
 }
+
+ws.on('error', console.error);
+
+ws.on('open', function open() {
+    ws.send('something');
+});
+
+ws.on('message', function message(data) {
+    console.log('Received: %s', data);
+});
+
+ws.on('close', function close() {
+
+});

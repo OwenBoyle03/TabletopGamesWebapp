@@ -1,5 +1,7 @@
 'use strict'
-const { randomUUID } = require('crypto');
+//const { randomUUID } = require('crypto');
+import CAHGame from './CAHGame.js';
+import { randomUUID } from "crypto";
 //const csv = require('csv-parser');
 //const fs = require('fs');
 
@@ -15,7 +17,7 @@ class Lobby {
         this.lobbyId = randomUUID();
         this.password = password;
         this.players = [ uuid ];
-        this.game = "";
+        this.game = new CAHGame([uuid]);
     }
 
     setLobbyOwnerName(lobbyOwnerName) {
@@ -23,7 +25,16 @@ class Lobby {
     }
 
     setGameMode(gameMode) {
-        this.gameMode = gameMode;
+        if (gameMode === "Cards Against Humanity") {
+            this.gameMode = "Cards Against Humanity";
+            this.game = new CAHGame(this.players);
+        } else if (gameMode === "Uno") {
+            this.gameMode = "Cards Against Humanity";
+            this.game = new CAHGame(this.players);
+        } else if (gameMode === "Chess") {
+            this.gameMode = "Cards Against Humanity";
+            this.game = new CAHGame(this.players);
+        }
     }
 
     setMaxNumberOfPlayers(maxNumberOfPlayers) {
@@ -112,4 +123,7 @@ class Lobby {
     }
 }
 
-module.exports = Lobby;
+// The commented out version is exporting in the old/ CommonJS way
+// The one below is the new ES modules
+//module.exports = Lobby;
+export default Lobby;

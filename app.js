@@ -1,13 +1,27 @@
-const express = require('express');
-const {body, validationResult} = require('express-validator');
+//const express = require('express');
+//const {body, validationResult} = require('express-validator');
 //const uuid = require('uuid');
-const cookieParser = require('cookie-parser');
+//const cookieParser = require('cookie-parser');
 //import { v4 as uuidv4 } from 'uuid';
-const { randomUUID } = require('crypto');
-const Lobby = require('./Lobby');
-const csv = require('csv-parser');
-const fs = require('fs');
-const ws = require('ws');
+//const { randomUUID } = require('crypto');
+//const Lobby = require('./Lobby');
+//const csv = require('csv-parser');
+//const fs = require('fs');
+//const ws = require('ws');
+import express from 'express';
+import { body, validationResult } from 'express-validator';
+import cookieParser from 'cookie-parser';
+import { randomUUID } from 'crypto';
+import Lobby from './Lobby.js';
+import csv from 'csv-parser';
+import fs from 'fs';
+import WebSocket from 'ws';
+import { WebSocketServer } from 'ws';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const baseBlackCardsFilePath = 'baseBlackCards.txt';
 const baseWhiteCardsFilePath = 'baseWhiteCards.txt';
@@ -16,7 +30,8 @@ const baseWhiteCardsFilePath = 'baseWhiteCards.txt';
 // which is for more complex form data like files and
 // when using the formData object in javascript to send
 // data to the server using a fetch request
-const multer = require("multer");
+//const multer = require("multer");
+import multer from 'multer';
 const upload = multer();
 
 const app = express();
@@ -30,11 +45,15 @@ app.set('view engine', 'pug');
 app.set('views', __dirname + "/views");
 
 // socket.io setup
-const http = require('http');
+//const http = require('http');
+import http from 'http';
 
 const hostname = 'localhost';
 
 const server = http.createServer(app);
+// The server inside the curly brackets allows the websocket
+// to listen on the same port as express
+const wss = new WebSocketServer({ server });
 
 //const { Server } = require('socket.io')
 //const io = new Server(server)
@@ -184,6 +203,8 @@ app.get('/api/checkForGameStart', (req, res) => {
     //res.send(lobby.getGameStarted());
 })
 
+
+
 app.get('/api/getGameInformation', (req, res) => {
     const lobbyId = req.signedCookies.lobbyId;
     const lobby = findLobby(lobbyId);
@@ -281,6 +302,16 @@ app.post('/joinLobby/passwordInput/:lobbyId', (req, res) => {
 app.post('/lobbyDetails', (req, res) => {
     res.sendFile(__dirname + '/public/lobby.html');
 })
+
+wss.on('connection', function connection(ws) {
+    ws.on('error', console.error);
+
+    ws.on('message', function message(data) {
+        console.log('received: %s', data);
+    });
+
+    ws.send('something');
+});
 
 /*
 app.get('/:id', (req, res) => {
