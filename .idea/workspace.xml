@@ -4,13 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a58d7e7d-0c5c-409f-bbe0-a02f65f42c4f" name="Changes" comment="">
+    <list default="true" id="a58d7e7d-0c5c-409f-bbe0-a02f65f42c4f" name="Changes" comment="Started WebSocket stuff and changed playersScores in CAHGame to a map">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CAHGame.js" beforeDir="false" afterPath="$PROJECT_DIR$/CAHGame.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lobby.js" beforeDir="false" afterPath="$PROJECT_DIR$/Lobby.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/gamePage.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/gamePage.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/js/GameController.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/GameController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/js/GameView.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/GameView.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,8 +107,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
-        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.30387.90" />
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145" />
       </set>
     </attachedChunks>
   </component>
@@ -210,7 +212,20 @@
       <workItem from="1769206824074" duration="1527000" />
       <workItem from="1769208399957" duration="5475000" />
       <workItem from="1769348977787" duration="4282000" />
-      <workItem from="1769474115922" duration="8898000" />
+      <workItem from="1769474115922" duration="19059000" />
+      <workItem from="1769533489243" duration="15220000" />
+      <workItem from="1769635812818" duration="11876000" />
+      <workItem from="1769702062877" duration="22828000" />
+      <workItem from="1770162639202" duration="3354000" />
+      <workItem from="1770223514246" duration="12246000" />
+      <workItem from="1770649733926" duration="3322000" />
+      <workItem from="1771173198140" duration="1358000" />
+      <workItem from="1771261981997" duration="4725000" />
+      <workItem from="1771412778088" duration="9201000" />
+      <workItem from="1771590147647" duration="2128000" />
+      <workItem from="1771760801525" duration="123000" />
+      <workItem from="1771760975134" duration="11377000" />
+      <workItem from="1771863027327" duration="6000" />
     </task>
     <task id="LOCAL-00001" summary="Initial Commit">
       <option name="closed" value="true" />
@@ -276,7 +291,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769208265661</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Started WebSocket stuff and changed playersScores in CAHGame to a map">
+      <option name="closed" value="true" />
+      <created>1769484616117</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1769484616117</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -299,7 +322,8 @@
     <MESSAGE value="Added node_modules to git ignore" />
     <MESSAGE value="Initial commit" />
     <MESSAGE value="Re-added a node module license" />
-    <option name="LAST_COMMIT_MESSAGE" value="Re-added a node module license" />
+    <MESSAGE value="Started WebSocket stuff and changed playersScores in CAHGame to a map" />
+    <option name="LAST_COMMIT_MESSAGE" value="Started WebSocket stuff and changed playersScores in CAHGame to a map" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
