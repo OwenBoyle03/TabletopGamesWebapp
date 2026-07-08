@@ -1,40 +1,96 @@
 'use strict'
 //const { randomUUID } = require('crypto');
 import CAHGame from './CAHGame.js';
-import { randomUUID } from "crypto";
+import EventEmitter from "events";
+//import { randomUUID } from "crypto";
 //const csv = require('csv-parser');
 //const fs = require('fs');
 
 //const baseBlackCardsFilePath = 'baseBlackCards.csv';
 
-class Lobby {
-    constructor(ownerName, uuid, password = "") {
-        this.lobbyOwnerName = ownerName;
+class Lobby extends EventEmitter {
+    constructor(ownerName, uuid, password = "", lobbyId) {
+        super();
+        //this.lobbyOwnerName = ownerName;
         this.gameMode = "Cards Against Humanity";
         this.maxNumberOfPlayers = 8;
         this.numberOfPlayers = 1;
         this.ownerUuid = uuid;
-        this.lobbyId = randomUUID();
+        this.lobbyId = lobbyId;
         this.password = password;
-        this.players = [ uuid ];
-        this.game = new CAHGame([uuid]);
+        //this.players = [ uuid ];
+        this.players = new Map();
+        this.players.set(uuid, ownerName);
+        this.game = new CAHGame(([uuid]));
+        this.setupCAHEventEmitters();
     }
 
+    /*
     setLobbyOwnerName(lobbyOwnerName) {
         this.lobbyOwnerName = lobbyOwnerName;
     }
+        */
 
     setGameMode(gameMode) {
         if (gameMode === "Cards Against Humanity") {
             this.gameMode = "Cards Against Humanity";
             this.game = new CAHGame(this.players);
+            this.game.removeAllListeners();
+            this.setupCAHEventEmitters();
         } else if (gameMode === "Uno") {
             this.gameMode = "Cards Against Humanity";
             this.game = new CAHGame(this.players);
+            this.game.removeAllListeners();
+            this.setupUNOEventEmitters();
         } else if (gameMode === "Chess") {
             this.gameMode = "Cards Against Humanity";
             this.game = new CAHGame(this.players);
+            this.game.removeAllListeners();
+            this.setupChessEventEmitters();
         }
+    }
+
+    // Doing it this way rather than generically allows the lobby object
+    // to put data in the eventEmitter as well
+    setupCAHEventEmitters() {
+        this.game.on('gameStarted', () => {
+            this.emit("gameStarted");
+        });
+
+        this.game.on('newRound', (data) => {
+            this.emit("newRound", data);
+        });
+
+        this.game.on('cardZarsTurn', (data) => {
+            this.emit("cardZarsTurn", data);
+        });
+
+        this.game.on('endOfCardZarsTurn', (data) => {
+            this.emit("endOfCardZarsTurn", data);
+        });
+
+        this.game.on('responseCardReceived', (data) => {
+            this.emit("responseCardReceived", data);
+        });
+
+        /*
+        this.game.on('clearWhiteCardResponses', (data) => {
+            this.emit("clearWhiteCardResponses", data);
+        });
+         */
+
+        this.game.on('playerLeft', (data) => {
+            this.emit("playerLeft", data);
+        });
+    }
+
+    setupUNOEventEmitters() {
+
+    }
+
+
+    setupChessEventEmitters() {
+
     }
 
     setMaxNumberOfPlayers(maxNumberOfPlayers) {
@@ -56,7 +112,7 @@ class Lobby {
      */
 
     getLobbyOwnerName() {
-        return this.lobbyOwnerName;
+        return this.players.get(this.ownerUuid);
     }
 
     getGameMode() {
@@ -87,11 +143,23 @@ class Lobby {
         return this.players;
     }
 
+    getPlayerName(uuid) {
+        return this.players.get(uuid);
+    }
+
+    getPlayersNames() {
+        return Array.from(this.players.values());
+    }
+
+    getPlayerIndexByUuid(uuid) {
+        const playersArray = Array.from(this.players.keys());
+        return playersArray.indexOf(uuid);
+    }
 
     getLobbyDisplayData() {
         let passwordRequired = (this.password !== "");
 
-        return {    lobbyOwnerName: this.lobbyOwnerName,
+        return {    lobbyOwnerName: this.getLobbyOwnerName(),
                     gameMode: this.gameMode,
                     maxNumberOfPlayers: this.maxNumberOfPlayers,
                     password: passwordRequired,
@@ -104,21 +172,18 @@ class Lobby {
         return this.game;
     }
 
-    // Needs re-write for new CAHGame object
-    addPlayer(uuid) {
-        this.players.push(uuid);
+    addPlayer(uuid, playerName) {
+        this.players.set(uuid, playerName);
+        this.emit("playerJoined", { playerName: playerName });
         this.game.addPlayerScore(uuid);
         //this.playersScores.push({ uuid: 0 });
         this.numberOfPlayers += 1;
     }
 
-    // Needs re-write for new CAHGame object
     removePlayer(uuid) {
-        // The players and playersScores arrays are in the same order
-        const playerIndex = this.players.indexOf(uuid);
-        //this.playersScores.splice(playerIndex, 1)
-        this.players.splice(playerIndex, 1);
-        this.game.removePlayerScore(playerIndex);
+        this.emit("playerLeft", { playerName: this.players.get(uuid) });
+        this.players.delete(uuid);
+        this.game.removePlayerScore(uuid);
         this.numberOfPlayers -= 1;
     }
 }

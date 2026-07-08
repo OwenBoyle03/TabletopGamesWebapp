@@ -1,0 +1,109 @@
+canvas {
+    /*height: 38vw;*/
+    height: 30vh;
+    width: auto;
+    max-width: fit-content;
+    margin: 1vh;
+}
+
+/*#main {
+    padding: 1vh;
+    justify-content: center;
+    align-items: center;
+}*/
+
+#topLine {
+    display: flex;
+}
+
+#blackCard {
+
+}
+
+#responses {
+    display: flex;
+    /*justify-content: center;*/
+    flex-wrap: wrap;
+}
+
+#responses canvas {
+    padding-left: 1vh;
+}
+
+/*
+Change the padding of #responses div to change the distance between the players reponses when there are
+multiple responses from each player.
+*/
+#responses div {
+    display: flex;
+    padding-left: 3vh;
+}
+
+#responses div canvas {
+    padding-left: 1vh;
+}
+
+#playerCards {
+    /*
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 1vmin;*/
+    display: flex;
+    /*justify-content: center;*/
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#playerCards canvas {
+    height: 26vh;
+    width: auto;
+    flex: 0 0 auto;
+}
+
+#timerAndSubmitButton {
+    display: flex;
+    gap: 1vh;
+    /*border: 2px solid red;*/
+}
+
+#turnTimer, #submitButton {
+    flex: 0 0 auto;
+}
+
+#bottomOfPage {
+    
+}
+
+#informationAndOptions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    /*gap: 1vh;*/
+    padding: 2vh;
+}
+
+#informationAndOptions canvas {
+    
+}
+
+#playersScores {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 2vh;
+}
+
+#playersScores canvas {
+    padding: 2vh;
+    /*height: 8vh;*/
+    height: 25vh;
+    width: auto;
+    max-width: fit-content;
+    margin: 1vh;
+}
+
+div:empty {
+    display: none;
+}

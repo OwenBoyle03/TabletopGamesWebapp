@@ -2,7 +2,6 @@ html {
     margin: 0;
     height: 100%;
     overflow: hidden;
-    text-align: center;
     background-color: #242526;
     color: white;
 }
@@ -13,33 +12,46 @@ body {
     overflow: hidden;
 }
 
-#main {
-    padding: 1vh;
-    justify-content: center;
-    align-items: center;
+h1 {
+    text-align: center;
 }
 
+#main {
+    padding: 1vh;
+}
+
+/*
 canvas {
-    /*height: 38vw;*/
+    /*height: 38vw;
     height: 30vh;
     width: auto;
     max-width: fit-content;
 }
+*/
 
 #lobbies {
+    /*
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-gap: 5vmin;
+    */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1vh;
+    justify-content: center;
     /*padding: 1vmin;*/
 }
 
 #lobbies canvas {
-    height: 26vh;
+    height: 22vh;
     width: auto;
+    flex: 0 0 auto;
 }
 
 .centered {
-    /*display: flex;*/
-    justify-items: center;
+    /*display: flex;
+    justify-content: center;*/
+    /*
     align-items: center;
+    */
 }
