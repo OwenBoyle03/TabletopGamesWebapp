@@ -27,7 +27,8 @@ const app = express();
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const cookieParserKey = "Midnight City";
+// const cookieParserKey = "";
+const cookieParserKey = "" + fs.readFileSync('./cookieParserKey.txt');
 app.use(cookieParser(cookieParserKey));
 
 app.set('view engine', 'pug');
