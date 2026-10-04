@@ -1,7 +1,7 @@
 'use strict'
 
 class ViewCard {
-    constructor(colour, text, width, height, nodeToConnectTo, textScale = 0.09) {
+    constructor(colour, text, width, height, nodeToConnectTo, textEditable = false, textScale = 0.09) {
         this.colour = colour;
         this.text = text;
         this.width = width;
@@ -32,9 +32,14 @@ class ViewCard {
 
         nodeToConnectTo.appendChild(this.canvas);
 
+        this.textEditable = textEditable;
         this.cursorTimer = null;
 
         //this.drawCard();
+    }
+
+    isTextEditable() {
+        return this.textEditable;
     }
 
     getCanvas() {

@@ -144,7 +144,11 @@ class GameView {
 
     setPlayerCards(playerCards) {
         for (let i = 0; i < playerCards.length; i++) {
-            this.playerCards.push(new ViewCard("white", playerCards[i][0], this.cardWidth, this.cardHeight, this.playerCardsDiv));
+            if (playerCards[i][0] === "Blank Card") {
+                this.playerCards.push(new ViewCard("white", "", this.cardWidth, this.cardHeight, this.playerCardsDiv, true));
+            } else {
+                this.playerCards.push(new ViewCard("white", playerCards[i][0], this.cardWidth, this.cardHeight, this.playerCardsDiv));
+            }
             console.log("Player card " + playerCards[i][1] + " has been set to " + playerCards[i][0]);
         }
     }
@@ -322,14 +326,19 @@ class GameView {
         }
     }
 
-    checkForPlayerCardClick(handler, numberOfCards) {
+    addRelevantEventListenerToPlayerCards(clickHandler, keyPressHandler, numberOfCards) {
         // Have to store the annoymous functions in order to remove the event listeners
         this.playerCardListeners = [];
 
         for (let i = 0; i < this.playerCards.length; i++) {
-            const listener = () => handler(i, numberOfCards);
-            this.playerCardListeners.push(listener);
-            this.getPlayerCards()[i].getCanvas().addEventListener('click', listener);
+            if (this.playerCards[i].isTextEditable()) {
+                const listener = () => keyPressHandler(event, this.playerCards[i]);
+                this.playerCardListeners.push(listener);
+            } else {
+                const listener = () => clickHandler(i, numberOfCards);
+                this.playerCardListeners.push(listener);
+                this.getPlayerCards()[i].getCanvas().addEventListener('click', listener);
+            }
         }
     }
 
@@ -339,9 +348,14 @@ class GameView {
         }
     }
 
-    removePlayerCardClickListeners() {
+    removeRelevantEventListenerFromPlayerCards() {
         for (let i = 0; i < this.playerCards.length; i++) {
-            this.getPlayerCards()[i].getCanvas().removeEventListener('click', this.playerCardListeners[i]);
+            if (this.playerCards[i].isTextEditable()) {
+                this.getPlayerCards()[i].getCanvas().removeEventListener('keydown', this.playerCardListeners[i]);
+            } else {
+                this.getPlayerCards()[i].getCanvas().removeEventListener('click', this.playerCardListeners[i]);
+            }
+            //this.getPlayerCards()[i].getCanvas().removeEventListener('click', this.playerCardListeners[i]);
         }
     }
 

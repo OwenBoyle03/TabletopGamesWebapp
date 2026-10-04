@@ -134,7 +134,7 @@ function removeCardZarInput() {
 
 // Removes the event listeners and buttons for the player and clears all previous input
 function removePlayerInput() {
-    view.removePlayerCardClickListeners();
+    view.removeRelevantEventListenerFromPlayerCards();
     view.removeSubmitButtonEventListener();
     view.removeSubmitButton();
 
@@ -266,7 +266,7 @@ function webSocketMessageHandler(event) {
             //view.setCardZar("");
         } else {
             //view.setCardZar(parsedData["cardZar"]);
-            view.checkForPlayerCardClick(playerCardClicked, parsedData["numberOfResponseCardsAllowed"]);
+            view.addRelevantEventListenerToPlayerCards(playerCardClicked, handleKeyPress, parsedData["numberOfResponseCardsAllowed"]);
             view.addSubmitButton();
             view.addSubmitButtonEventListener(playerSubmit.bind(this, parsedData["numberOfResponseCardsAllowed"]));
         }
@@ -436,6 +436,15 @@ function turnTimer(endOfTurnTimer) {
 
     //setTimeout(endTurnTimer, Date.now() - endOfTurnTimer);
 }
+
+function handleKeyPress(event, card) {
+    if (event.key === 'Backspace') {
+        card.removeLastCharFromCurrentCardText();
+    } else if (event.key.length === 1) {
+        card.addCharToCurrentCardText(event.key);
+    }
+}
+
 /*
 function endTurnTimer() {
     if (timer) {
