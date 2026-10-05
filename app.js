@@ -6,7 +6,6 @@ import { randomUUID } from 'crypto';
 import Lobby from './Lobby.js';
 import csv from 'csv-parser';
 import fs from 'fs';
-import WebSocket from 'ws';
 import { WebSocketServer } from 'ws';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -48,13 +47,19 @@ const wss = new WebSocketServer({ server });
 
 const port = 3000;
 
-const openLobbies = new Map();
+const allLobbies = new Map();
 
 let testLobbyId = randomUUID();
-openLobbies.set(testLobbyId, new Lobby("Uhhhh", randomUUID(), "Steven", testLobbyId));
+let testLobby = new Lobby(randomUUID(), "Steven", testLobbyId);
+allLobbies.set(testLobbyId, testLobby);
+testLobby.setOwnerNameAndInitialisePlayersMap("Uhhhh");
+testLobby.setLobbyOpen(true);
 
 testLobbyId = randomUUID();
-openLobbies.set(testLobbyId, new Lobby("oooooo", randomUUID(), "", testLobbyId));
+testLobby = new Lobby(randomUUID(), "", testLobbyId);
+allLobbies.set(testLobbyId, testLobby);
+testLobby.setOwnerNameAndInitialisePlayersMap("oooooo");
+testLobby.setLobbyOpen(true);
 
 const users = new Map();
 
@@ -62,10 +67,10 @@ app.use(express.static('public'));
 
 function findLobbyByOwnerId(ownerId) {
 
-    let lobbies = openLobbies.entries();
+    let lobbies = allLobbies.entries();
     let currentLobby = {};
 
-    for (let i = 0; i < openLobbies.size; i++) {
+    for (let i = 0; i < allLobbies.size; i++) {
         //
         currentLobby = lobbies.next().value[1];
         if (currentLobby.getOwnerUuid() === ownerId) {
@@ -77,74 +82,53 @@ function findLobbyByOwnerId(ownerId) {
 }
 
 app.get('/', (req, res) => {
-    //res.render(__dirname + '/views/chooseUsername');
     res.sendFile(__dirname + '/public/chooseLobby.html');
-    // httpOnly means the cookie can't be accessed by client side javascript
-    res.cookie("uuid", randomUUID(), { signed: true, httpOnly: true, secure: true, sameSite: true });
-    //res.json(uuid.v4());
 })
 
+// Lobbies are only available to join if they are open and the lobby owner has set their username
 app.get('/api/lobbiesAvailable', (req, res) => {
     const lobbiesData = [];
     
-    openLobbies.forEach((lobby) => {
-        lobbiesData.push(lobby.getLobbyDisplayData());
+    allLobbies.forEach((lobby) => {
+        if (lobby.isOpen()) {
+            lobbiesData.push(lobby.getLobbyDisplayData());
+        }
     });
 
     res.json(lobbiesData);
 })
 
+// Can't join the lobby until the user has set their username
 app.get('/createLobby', (req, res) => {
+    const uuid = randomUUID();
+    const lobbyId = randomUUID();
+
+    res.cookie("uuid", uuid, { signed: true, httpOnly: true, secure: true, sameSite: true });
+    res.cookie("lobbyId", lobbyId, { signed: true, httpOnly: true, secure: true, sameSite: true });
+
+    const lobby = new Lobby(uuid, "", lobbyId);
+    allLobbies.set(lobbyId, lobby);
+    // Gets added to openLobbies when the lobby owner sets their username
+    //openLobbies.set(lobbyId, lobby);
+
     res.sendFile(__dirname + '/public/gamePage.html');
 })
 
 app.post('/joinLobby', (req, res) => {
-    // Add validation here to check if a lobby has a password and
-    // if so check if the password is correct
-    // Do I need to add validation for the lobbyId?
-    const userId = req.signedCookies.uuid;
+    
     const lobbyId = req.body.lobbyId;
-    const lobby = openLobbies.get(lobbyId);
+    const lobby = allLobbies.get(lobbyId);
 
     // Checks to see if the lobby is full
     if (lobby.getNumberOfPlayers() < lobby.getMaxNumberOfPlayers()) {
 
-        // Checks for lobby password
-        if (lobby.getPassword() === "") {
-            lobby.addPlayer(userId, users.get(userId));
-            res.cookie("lobbyId", lobbyId, { signed: true, httpOnly: true, secure: true, sameSite: true });
-            res.sendFile(__dirname + '/public/gamePage.html');
-        } else {
-            res.redirect('/joinLobby/passwordInput/' + lobbyId);
-        }
+        res.cookie("uuid", randomUUID(), { signed: true, httpOnly: true, secure: true, sameSite: true });
+        res.cookie("lobbyId", lobbyId, { signed: true, httpOnly: true, secure: true, sameSite: true });
+        res.sendFile(__dirname + '/public/gamePage.html');
 
     } else {
         res.json({ error: "Lobby is full" });
     }
-})
-
-app.get('/joinLobby/passwordInput/:lobbyId', (req, res) => {
-    //res.render(__dirname + '/views/passwordInput', { lobbyId: req.params.lobbyId });
-    res.render(__dirname + '/views/passwordInput');
-})
-
-app.post('/joinLobby/passwordInput/:lobbyId', (req, res) => {
-    // Add password validation and escape characters
-    // Add the same validation for the lobbyId
-
-    const userId = req.signedCookies.uuid;
-    const lobbyId = req.params.lobbyId;
-    const enteredPassword = req.body.password;
-    const lobby = openLobbies.get(lobbyId);
-
-    if (enteredPassword === lobby.getPassword()) {
-        lobby.addPlayer(userId, users.get(userId));
-        res.cookie("lobbyId", lobbyId, { signed: true, httpOnly: true, secure: true, sameSite: true });
-        res.sendFile(__dirname + '/public/gamePage.html');
-    } else {
-        res.render(__dirname + '/views/passwordInput', { enteredPassword: enteredPassword, errorMsg: 'The entered password is incorrect' });
-    }
-
 })
 
 app.post('/api/lobbyOwnerName', (req, res) => {
@@ -154,7 +138,7 @@ app.post('/api/lobbyOwnerName', (req, res) => {
 
     const lobbyId = randomUUID();
     const lobby = new Lobby(ownerName, uuid, "", lobbyId);
-    openLobbies.set(lobbyId, lobby);
+    allLobbies.set(lobbyId, lobby);
 })
 
 wss.on('connection', (ws, req) => {
@@ -162,19 +146,131 @@ wss.on('connection', (ws, req) => {
     const cookies = cookie.parse(req.headers.cookie ?? '');
 
     const lobbyId = cookieParser.signedCookie(cookies.lobbyId, cookieParserKey);
-    const lobby = openLobbies.get(lobbyId);
-    const game = lobby.getGame();
     const uuid = cookieParser.signedCookie(cookies.uuid, cookieParserKey);
 
-    console.log(lobbyId);
-    console.log(uuid);
-    console.log(lobby.getLobbyDisplayData());
+    const lobby = allLobbies.get(lobbyId);
+    //console.log(lobby.getLobbyDisplayData());
+
+    if (!lobby) {
+        ws.send(JSON.stringify({ "error": "Lobby not found" }));
+        ws.close();
+        return;
+    }
+
+    if (!(lobby.requiresPassword())) {
+        authenticatePlayer(ws, lobby, uuid);
+    } else {
+        requestAuthentication(ws, lobby, uuid);
+    }
+
+});
+
+// Checks if the player is the lobby owner and if so adds the lobby options otherwise
+// it just adds the player to the lobby and starts the game connection
+function authenticatePlayer(ws, lobby, uuid) {
+
+    if (lobby.getOwnerUuid() === uuid) {
+        startLobbyOwnerConnection(ws, lobby, uuid);
+    } else {
+        //lobby.addPlayer(uuid, users.get(uuid));
+        startPlayerNameConnection(ws, lobby, uuid);
+    }
+
+}
+
+function requestAuthentication(ws, lobby, uuid) {
+
+    ws.send(JSON.stringify({ "requestAuthentication": true }));
+
+    let numberOfAuthenticationAttempts = 0;
+
+    function handleAuthenticationMessage(data) {
+        data = JSON.parse(data);
+
+        if (lobby.getPassword() === data["password"]) {
+            ws.send(JSON.stringify({ "authenticationSuccess": true }));
+            ws.off('message', handleAuthenticationMessage);
+            authenticatePlayer(ws, lobby, uuid);
+        } else {
+            ws.send(JSON.stringify({ "authenticationFailed": true }));
+            numberOfAuthenticationAttempts++;
+
+            if (numberOfAuthenticationAttempts >= 5) {
+                ws.send(JSON.stringify({ "authenticationFailed": true, "error": "Too many attempts" }));
+                ws.close();
+            }
+        }
+    }
+
+    ws.on('message', handleAuthenticationMessage);
+
+}
+
+// Makes the owner set their username and the makes the lobby visible to other players
+function startLobbyOwnerConnection(ws, lobby, uuid) {
+
+    ws.send(JSON.stringify({ "setUsername": true }));
+
+    // Checks the username is valid before allowing it to be set
+    function handleOwnerUsernameMessage(data) {
+        data = JSON.parse(data);
+
+        // Add whatever validation is necessary I don't know yet
+        // Maybe some input sanitization and length checks, but for now just check if it exists
+        if (data["username"]) {
+            //console.log("Lobby owner set their username to: " + data["username"]);
+            ws.off('message', handleOwnerUsernameMessage);
+            lobby.setOwnerNameAndInitialisePlayersMap(data["username"]);
+            // Without this the lobby won't be visible to other players
+            lobby.setLobbyOpen(true);
+            startGameConnection(ws, lobby, uuid);
+        } else {
+            ws.send(JSON.stringify({ "invalidUsername": true, "error": "Invalid username" }));
+        }
+    }
+
+    ws.on('message', handleOwnerUsernameMessage);
+
+}
+
+// Makes the player set their username and then starts the game connection
+function startPlayerNameConnection(ws, lobby, uuid) {
+
+    ws.send(JSON.stringify({ "setUsername": true }));
+
+    // Checks the username is valid before allowing it to be set
+    function handlePlayerUsernameMessage(data) {
+        data = JSON.parse(data);
+
+        // Add whatever validation is necessary I don't know yet
+        // Maybe some input sanitization and length checks, but for now just check if it exists
+        if (data["username"]) {
+            ws.off('message', handlePlayerUsernameMessage);
+            lobby.addPlayer(uuid, data["username"]);
+            startGameConnection(ws, lobby, uuid);
+        } else {
+            ws.send(JSON.stringify({ "invalidUsername": true, "error": "Invalid username" }));
+        }
+    }
+
+    ws.on('message', handlePlayerUsernameMessage);
+
+}
+
+function startGameConnection(ws, lobby, uuid) {
+
+    const game = lobby.getGame();
+
+    console.log(" ");
+    //console.log("Lobby ID: " + lobby.getLobbyId());
+    console.log("UUID: " + uuid);
+    console.log("Lobby Display Data: " + JSON.stringify(lobby.getLobbyDisplayData()));
     //console.log(game);
 
     ws.on('error', console.error);
 
     ws.on('message', (data) => {
-        handleWebSocketMessage.apply(this, [ws, data, lobby, game, uuid]);
+        handlePlayerMessage.apply(this, [ws, data, lobby, game, uuid]);
     });
 
     
@@ -232,42 +328,55 @@ wss.on('connection', (ws, req) => {
 
     // Ping here?
 
-});
+}
 
-function handleWebSocketMessage(ws, data, lobby, game, uuid) {
+function handlePlayerMessage(ws, data, lobby, game, uuid) {
     console.log('Received: %s', data);
     data = JSON.parse(data);
     
 
+    // Handles when the Card Zar chooses a winner for the round
     if (game.getCardZar() === uuid && data["chosenResponseCardOwner"] && game.getIsCardZarsTurn()) {
         game.chooseRoundWinner(data);
     }
 
+    // Handles when a player chooses their response card(s) for the round
     if (game.getCardZar() !== uuid && data["chosenPlayerCards"] && !game.getIsCardZarsTurn()) {
         game.addToWhiteCardResponses(uuid, data["chosenPlayerCards"]);
     }
 
+    // Handles when a player requests new white card(s) from the server
+    if (data["getWhiteCard"]) {
+        console.log(JSON.stringify(data));
+        ws.send(JSON.stringify({ "newPlayerCard(s)": game.getRandomWhiteCardDeck(data["numberOfCards"]) }));
+    }
+
+    // Handles when the lobby owner changes the game settings
     if (lobby.getOwnerUuid() === uuid && data["gameMode"]) {
         lobby.setGameMode(data["gameMode"]);
         lobby.setMaxNumberOfPlayers(data["maxNumOfPlayers"]);
         lobby.setPassword(data["lobbyPassword"]);
     }
 
+    // Handles when the lobby owner changes the number of players allowed in the lobby
     if (lobby.getOwnerUuid() === uuid && data["changeNumberOfPlayers"]) {
         lobby.setMaxNumberOfPlayers(data["changeNumberOfPlayers"]);
     }
 
+    // Handles when the lobby owner changes the lobby password
     if (lobby.getOwnerUuid() === uuid && data["changeLobbyPassword"]) {
-        lobby.setPassword(data["changeLobbyPassword"]);
+        if (data["changeLobbyPassword"] === "") {
+            lobby.setPassword("");
+            lobby.setHasPassword(false);
+        } else {
+            lobby.setPassword(data["changeLobbyPassword"]);
+            lobby.setHasPassword(true);
+        }
     }
 
+    // Handles when the lobby owner starts the game
     if (lobby.getOwnerUuid() === uuid && data["startGame"]) {
         game.startGame();
-    }
-
-    if (data["getWhiteCard"]) {
-        console.log(JSON.stringify(data));
-        ws.send(JSON.stringify({ "newPlayerCard(s)": game.getRandomWhiteCardDeck(data["numberOfCards"]) }));
     }
 }
 

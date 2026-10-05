@@ -207,7 +207,7 @@ function setWebSocketEventListeners() {
 
     ws.addEventListener('message', webSocketMessageHandler);
 
-    ws.send(JSON.stringify({"message": "Connection successful, hello from the game!"}));
+    //ws.send(JSON.stringify({"message": "Connection successful, hello from the game!"}));
 }
 
 function webSocketMessageHandler(event) {
@@ -215,7 +215,36 @@ function webSocketMessageHandler(event) {
     console.log('Received: ');
     console.log(parsedData);
 
-    if (parsedData["firstContact"] && parsedData["isLobbyOwner"]) {
+    if (parsedData["setUsername"]) {
+
+        // Sets the username for the player and sends it to the server
+        const username = prompt("Please enter your username:");
+        ws.send(JSON.stringify({ "username": username }));
+        console.log("Username sent: " + username);
+
+    } else if (parsedData["invalidUsername"]) {
+        console.log(parsedData["invalidUsername"]);
+
+        // Prompts the player to enter a valid username and sends it to the server
+        const username = prompt("Invalid username, please enter a valid username:");
+        ws.send(JSON.stringify({ "username": username }));
+        console.log("Username sent: " + username);
+
+    } else if (parsedData["inputPassword"]) {
+
+        // Prompts the player to enter the lobby password and sends it to the server
+        const password = prompt("Please enter the lobby password:");
+        ws.send(JSON.stringify({ "lobbyPassword": password }));
+        console.log("Lobby password sent: " + password);
+
+    } else if (parsedData["invalidPassword"]) {
+
+        // Prompts the player to enter a valid lobby password and sends it to the server
+        const password = prompt("Invalid lobby password, please enter a valid lobby password:");
+        ws.send(JSON.stringify({ "lobbyPassword": password }));
+        console.log("Lobby password sent: " + password);
+
+    } else if (parsedData["firstContact"] && parsedData["isLobbyOwner"]) {
         // Shows the lobby owner options UI and sets the event listeners for the options
 
         view.displayLobbyOwnerOptionsUI();
