@@ -7,8 +7,10 @@ async function getLobbies() {
     //fetch('/api/lobbiesAvailable').then(res => res.json()).then()
 }
 
+/*
 const params = new URLSearchParams(window.location.search);
 const username = params.get('username');
+*/
 
 const view = new LobbyCardsView();
 view.checkForCreateLobbyCardClick(createLobbyCardClicked);

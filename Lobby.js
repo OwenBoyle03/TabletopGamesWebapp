@@ -8,8 +8,9 @@ import EventEmitter from "events";
 
 //const baseBlackCardsFilePath = 'baseBlackCards.csv';
 
+// Players must not be allowed to join before the lobby owner has set their username.
 class Lobby extends EventEmitter {
-    constructor(ownerName, uuid, password = "", lobbyId) {
+    constructor(uuid, password = "", lobbyId) {
         super();
         //this.lobbyOwnerName = ownerName;
         this.gameMode = "Cards Against Humanity";
@@ -18,11 +19,25 @@ class Lobby extends EventEmitter {
         this.ownerUuid = uuid;
         this.lobbyId = lobbyId;
         this.password = password;
+        // Change this to false once test lobbies are removed
+        this.hasPassword = (password !== "");
         //this.players = [ uuid ];
         this.players = new Map();
-        this.players.set(uuid, ownerName);
+        this.lobbyOpen = false;
         this.game = new CAHGame(([uuid]));
         this.setupCAHEventEmitters();
+    }
+
+    setOwnerNameAndInitialisePlayersMap(ownerName) {
+        this.players.set(this.ownerUuid, ownerName);
+    }
+
+    setLobbyOpen(isOpen) {
+        this.lobbyOpen = isOpen;
+    }
+
+    isOpen() {
+        return this.lobbyOpen;
     }
 
     /*
@@ -105,6 +120,14 @@ class Lobby extends EventEmitter {
         this.password = password;
     }
 
+    requiresPassword() {
+        return this.hasPassword;
+    }
+
+    setHasPassword(hasPassword) {
+        this.hasPassword = hasPassword;
+    }
+
     /*
     toggleGameStarted() {
         this.gameStarted = !this.gameStarted;
@@ -157,12 +180,11 @@ class Lobby extends EventEmitter {
     }
 
     getLobbyDisplayData() {
-        let passwordRequired = (this.password !== "");
 
         return {    lobbyOwnerName: this.getLobbyOwnerName(),
                     gameMode: this.gameMode,
                     maxNumberOfPlayers: this.maxNumberOfPlayers,
-                    password: passwordRequired,
+                    password: this.requiresPassword(),
                     lobbyId: this.lobbyId
                 }
 

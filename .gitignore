@@ -1,3 +1,4 @@
 node_modules/
 node_modules/engine.io/node_modules/ws/
 workspace.xml
+cookieParserKey.txt
