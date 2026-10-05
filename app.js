@@ -187,6 +187,8 @@ function requestAuthentication(ws, lobby, uuid) {
     function handleAuthenticationMessage(data) {
         data = JSON.parse(data);
 
+        // Add whatever validation is necessary I don't know yet
+        // Maybe some input sanitization and length checks, but for now just check if it exists
         if (lobby.getPassword() === data["password"]) {
             ws.send(JSON.stringify({ "authenticationSuccess": true }));
             ws.off('message', handleAuthenticationMessage);
@@ -340,6 +342,8 @@ function handlePlayerMessage(ws, data, lobby, game, uuid) {
         game.chooseRoundWinner(data);
     }
 
+    // Add whatever validation is necessary I don't know yet
+    // Maybe some input sanitization and length checks, but for now just check if it exists
     // Handles when a player chooses their response card(s) for the round
     if (game.getCardZar() !== uuid && data["chosenPlayerCards"] && !game.getIsCardZarsTurn()) {
         game.addToWhiteCardResponses(uuid, data["chosenPlayerCards"]);
