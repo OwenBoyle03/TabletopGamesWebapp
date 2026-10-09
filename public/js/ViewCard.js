@@ -429,4 +429,29 @@ class ViewCard {
         }
     }
 
+    // Mouse scaling calculations
+    getCanvasScaledMousePosition(e) {
+        let bounds = this.canvas.getBoundingClientRect();
+
+        // Raw mouse position
+        let mouseX = e.clientX;
+        let mouseY = e.clientY;
+
+        // Mouse position account for canvas position
+        mouseX = mouseX - bounds.left - scrollX;
+        mouseY = mouseY - bounds.top - scrollY;
+
+        // Mouse position normalised for canvas bounds
+        mouseX /= bounds.width;
+        mouseY /= bounds.height;
+
+        // Mouse position scaled to canvas coordinates
+        mouseX *= this.canvas.width;
+        mouseY *= this.canvas.height;
+
+        // Since the mouse position is given in terms of pixel and the canvas measurements
+        // are a mix of pixel and css scaling the mouse position needs to be scaled as well
+        return { x: mouseX, y: mouseY };
+    }
+
 }

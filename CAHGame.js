@@ -41,6 +41,7 @@ class CAHGame extends EventEmitter {
         const baseBlackCardsFilePath = 'baseBlackCardPack.txt';
         const baseWhiteCardsFilePath = 'baseWhiteCardPack.txt';
 
+        // Must add validation to check if the files exist, and if not, create them with default values
         fs.readFile(baseBlackCardsFilePath, (err, data) => {
             let lines = data.toString().replace(/[\r]+/gm, "").split('\n');
 

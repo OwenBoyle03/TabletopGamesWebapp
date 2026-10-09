@@ -42,11 +42,19 @@ function addPlayerCardsIndexes(newPlayerCards) {
     console.log("Player cards indexes: " + playerCardsIndexes);
 }
 
+
+
 function setLobbyOptionsEventListeners() {
     gameModeSelect = view.getGameModeCard();
     maxNumberOfPlayersSelect = view.getMaxNumberOfPlayersCard();
     lobbyPasswordInputField = view.getLobbyPasswordCard();
     startGameButton = view.getStartButtonCard();
+    
+    gameModeSelect.getCanvas().addEventListener('click', changeLobbySettings);
+    maxNumberOfPlayersSelect.getCanvas().addEventListener('click', changeLobbySettings);
+
+    lobbyPasswordInputField.getCanvas().addEventListener('focus', passwordInputCardFocused);
+    lobbyPasswordInputField.getCanvas().addEventListener('blur', passwordInputCardBlurred);
     
     startGameButton.getCanvas().addEventListener('click', startGame);
 }
@@ -54,8 +62,31 @@ function setLobbyOptionsEventListeners() {
 function removeLobbyOptionsEventListeners() {
     //gameModeSelect.getCanvas().removeEventListener();
     //maxNumberOfPlayersSelect.getCanvas().removeEventListener();
-    //lobbyPasswordInputField.getCanvas().removeEventListener();
+
+    lobbyPasswordInputField.getCanvas().removeEventListener('focus', passwordInputCardFocused);
+    lobbyPasswordInputField.getCanvas().removeEventListener('blur', passwordInputCardBlurred);
+
     startGameButton.getCanvas().removeEventListener('click', startGame);
+}
+
+function textInputCardFocused(card) {
+    toggleOnCursorOverTime(card);
+    card.getCanvas().addEventListener('keydown', handleKeyPress);
+}
+
+function textInputCardBlurred(card) {
+    toggleOffCursorOverTime(card);
+    card.getCanvas().removeEventListener('keydown', handleKeyPress);
+}
+
+function passwordInputCardFocused() {
+    toggleOnCursorOverTime(lobbyPasswordInputField);
+    lobbyPasswordInputField.getCanvas().addEventListener('keydown', handlePasswordInputKeyPress);
+}
+
+function passwordInputCardBlurred() {
+    toggleOffCursorOverTime(lobbyPasswordInputField);
+    lobbyPasswordInputField.getCanvas().removeEventListener('keydown', handlePasswordInputKeyPress);
 }
 
 function changeLobbySettings() {
@@ -468,9 +499,34 @@ function turnTimer(endOfTurnTimer) {
 
 function handleKeyPress(event, card) {
     if (event.key === 'Backspace') {
+        console.log(card);
         card.removeLastCharFromCurrentCardText();
     } else if (event.key.length === 1) {
         card.addCharToCurrentCardText(event.key);
+    }
+}
+
+function handlePasswordInputKeyPress(event) {
+    handleKeyPress(event, lobbyPasswordInputField);
+}
+
+let cursorTimer = null;
+
+function toggleOnCursorOverTime(card) {
+    cursorTimer = setInterval(() => {
+        if (card.hasCursorAtEndOfCardText()) {
+            card.removeCursorFromCardText();
+        } else {
+            card.displayCursorAtEndOfCardText();
+        }
+    }, 500);
+}
+
+function toggleOffCursorOverTime(card) {
+    if (cursorTimer) {
+        clearInterval(cursorTimer);
+        cursorTimer = null;
+        card.removeCursorFromCardText();
     }
 }
 

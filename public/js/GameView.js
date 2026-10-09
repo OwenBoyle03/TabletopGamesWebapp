@@ -379,7 +379,7 @@ class GameView {
         this.maxNumberOfPlayersCard.drawCardWithCentredText();
         this.maxNumberOfPlayersCard.drawLeftAndRightArrows();
 
-        this.lobbyPasswordCard = new ViewCard("white", "Set Lobby Password: \n None", this.cardHeight, this.cardHeight, this.informationAndOptionsDiv);
+        this.lobbyPasswordCard = new ViewCard("white", "Set Lobby Password: \n None", this.cardHeight, this.cardHeight, this.informationAndOptionsDiv, true);
         this.lobbyPasswordCard.drawCardWithCentredText();
         
         this.startButtonCard = new ViewCard("white", "Start Game", this.cardHeight, this.cardHeight, this.informationAndOptionsDiv);
