@@ -377,6 +377,7 @@ function handlePlayerMessage(ws, data, lobby, game, uuid) {
         } else {
             lobby.setPassword(data["changeLobbyPassword"]);
             lobby.setHasPassword(true);
+            console.log("Lobby password changed to: " + data["changeLobbyPassword"]);
         }
     }
 

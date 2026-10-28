@@ -147,7 +147,7 @@ export default class GameView {
     setPlayerCards(playerCards) {
         for (let i = 0; i < playerCards.length; i++) {
             if (playerCards[i][0] === "Blank Card") {
-                this.playerCards.push(new ViewCard("white", "", this.cardWidth, this.cardHeight, this.playerCardsDiv, true));
+                this.playerCards.push(new ViewCardEditable("white", "", this.cardWidth, this.cardHeight, this.playerCardsDiv));
             } else {
                 this.playerCards.push(new ViewCard("white", playerCards[i][0], this.cardWidth, this.cardHeight, this.playerCardsDiv));
             }
@@ -381,8 +381,8 @@ export default class GameView {
         this.maxNumberOfPlayersCard.drawCardWithCentredText();
         this.maxNumberOfPlayersCard.drawLeftAndRightArrows();
 
-        this.lobbyPasswordCard = new ViewCard("white", "Set Lobby Password: \n None", this.cardHeight, this.cardHeight, this.informationAndOptionsDiv, true);
-        this.lobbyPasswordCard.drawCardWithCentredText();
+        this.lobbyPasswordCard = new ViewCardEditable("white", "Set Lobby Password: \n", this.cardHeight, this.cardHeight, this.informationAndOptionsDiv, "centre");
+        this.lobbyPasswordCard.drawCard();
         
         this.startButtonCard = new ViewCard("white", "Start Game", this.cardHeight, this.cardHeight, this.informationAndOptionsDiv);
         this.startButtonCard.drawCardWithCentredText();

@@ -69,30 +69,30 @@ function removeLobbyOptionsEventListeners() {
 }
 
 function textInputCardFocused(card) {
-    toggleOnCursorOverTime(card);
+    card.toggleOnCursorOverTime();
     card.getCanvas().addEventListener('keydown', handleKeyPress);
 }
 
 function textInputCardBlurred(card) {
-    toggleOffCursorOverTime(card);
+    card.toggleOffCursorOverTime();
     card.getCanvas().removeEventListener('keydown', handleKeyPress);
 }
 
 function passwordInputCardFocused() {
-    toggleOnCursorOverTime(lobbyPasswordInputField);
+    lobbyPasswordInputField.toggleOnCursorOverTime();
     lobbyPasswordInputField.getCanvas().addEventListener('keydown', handlePasswordInputKeyPress);
 }
 
 function passwordInputCardBlurred() {
-    toggleOffCursorOverTime(lobbyPasswordInputField);
+    lobbyPasswordInputField.toggleOffCursorOverTime();
     lobbyPasswordInputField.getCanvas().removeEventListener('keydown', handlePasswordInputKeyPress);
-    ws.send(JSON.stringify({ "changeLobbyPassword": lobbyPasswordInputField.getCurrentCardText() }));
+    ws.send(JSON.stringify({ "changeLobbyPassword": lobbyPasswordInputField.getCardText() }));
 }
 
 function changeLobbySettings() {
     const selectedGameMode = gameModeSelect.value;
     const selectedMaxNumberOfPlayers = maxNumberOfPlayersSelect.value;
-    const lobbyPassword = lobbyPasswordInputField.value;
+    const lobbyPassword = lobbyPasswordInputField.getCardText();
     const lobbySettings = {
         gameMode: selectedGameMode,
         maxNumberOfPlayers: selectedMaxNumberOfPlayers,
@@ -509,9 +509,10 @@ function handleKeyPress(event, card) {
 function handlePasswordInputKeyPress(event) {
     handleKeyPress(event, lobbyPasswordInputField);
 }
-
+/*
 let cursorTimer = null;
 
+/*
 function toggleOnCursorOverTime(card) {
     cursorTimer = setInterval(() => {
         if (card.hasCursorAtEndOfCardText()) {
@@ -529,6 +530,7 @@ function toggleOffCursorOverTime(card) {
         card.removeCursorFromCardText();
     }
 }
+    */
 
 /*
 function endTurnTimer() {

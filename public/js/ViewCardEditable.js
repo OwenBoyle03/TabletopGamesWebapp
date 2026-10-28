@@ -2,11 +2,17 @@
 import ViewCard from './ViewCard.js';
 
 export default class ViewCardEditable extends ViewCard {
-    constructor(colour, text, width, height, nodeToConnectTo, textScale = 0.09) {
+    constructor(colour, text, width, height, nodeToConnectTo, textDisplayStyle = "normal", textScale = 0.09) {
         super(colour, text, width, height, nodeToConnectTo, textScale);
 
+        // Kind of a hack, but this is needed to make sure that the unchangable text is always displayed
+        // Basically for password input (May become an issue)
+        this.unchangableText = text;
+        this.text = "";
         this.cursorDisplayed = false;
         this.cursorTimer = null;
+        // Can be "normal" or "centre"
+        this.textDisplayStyle = textDisplayStyle;
 
         // This is needed to make the canvas focusable so that it can receive keyboard events
         this.canvas.setAttribute('tabindex', '-1');
@@ -15,6 +21,23 @@ export default class ViewCardEditable extends ViewCard {
 
     isTextEditable() {
         return true;
+    }
+
+    getCardText() {
+        if (this.cursorDisplayed) {
+            return this.text.substring(0, this.text.length - 1);
+        }
+        return this.text;
+    }
+
+    drawCard() {
+        if (this.textDisplayStyle === "normal") {
+            this.drawRoundedRectangle(this.colour, this.height, this.width, this.cardRadius);
+            this.wrapSpecificTextToCard(this.unchangableText + this.text);
+        } else {
+            this.drawRoundedRectangle(this.colour, this.height, this.width, this.cardRadius);
+            this.wrapSpecificTextToCardCentred(this.unchangableText + this.text);
+        }
     }
 
     addCharToCurrentCardText(char) {
@@ -30,7 +53,11 @@ export default class ViewCardEditable extends ViewCard {
     displayCursorAtEndOfCardText() {
         this.cursorDisplayed = true;
         this.drawRoundedRectangle(this.colour, this.height, this.width, this.cardRadius);
-        this.wrapSpecificTextToCard(this.text + "|");
+        if (this.textDisplayStyle === "normal") {
+            this.wrapSpecificTextToCard(this.unchangableText + this.text + "|");
+        } else {
+            this.wrapSpecificTextToCardCentred(this.unchangableText + this.text + "|");
+        }
     }
 
     removeCursorFromCardText() {

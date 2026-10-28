@@ -33,6 +33,14 @@ export default class ViewCard {
         //this.drawCard();
     }
 
+    isTextEditable() {
+        return false;
+    }
+
+    getCardText() {
+        return this.text;
+    }
+
     getCanvas() {
         return this.canvas;
     }
@@ -178,7 +186,7 @@ export default class ViewCard {
     }
 
     // Need to add wrapping
-    wrapTextToCardCentred() {
+    wrapSpecificTextToCardCentred(text) {
         // Sets the font and size of the text
         this.context.font = "" + (this.height * this.textScale) + "px Arial";
         //this.context.textAlign = "center";
@@ -198,7 +206,7 @@ export default class ViewCard {
 
         this.context.fillStyle = this.textColour;
 
-        const words = this.text.split(' ');
+        const words = text.split(' ');
         let xMeasuredLines = [];
         let line = '';
         //let textY = (this.height - (this.height * 0.98));
@@ -240,6 +248,10 @@ export default class ViewCard {
         }
 
         //this.context.fillText(line, (this.width - (this.width * 0.97)), textY);
+    }
+
+    wrapTextToCardCentred() {
+        this.wrapSpecificTextToCardCentred(this.text);
     }
 
     drawCentredTextToCardNoWrap() {
