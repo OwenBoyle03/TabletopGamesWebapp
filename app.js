@@ -178,6 +178,18 @@ function authenticatePlayer(ws, lobby, uuid) {
 
 }
 
+function inputValidation(data) {
+
+}
+
+function inputSanitization(data) {
+
+}
+
+function inputEscaping(data) {
+
+}
+
 function requestAuthentication(ws, lobby, uuid) {
 
     ws.send(JSON.stringify({ "requestAuthentication": true }));
@@ -360,6 +372,7 @@ function handlePlayerMessage(ws, data, lobby, game, uuid) {
     if (lobby.getOwnerUuid() === uuid && data["gameMode"]) {
         lobby.setGameMode(data["gameMode"]);
         lobby.setMaxNumberOfPlayers(data["maxNumOfPlayers"]);
+        // Add input validation and sanitisation here for the lobby password
         lobby.setPassword(data["lobbyPassword"]);
     }
 
@@ -371,13 +384,15 @@ function handlePlayerMessage(ws, data, lobby, game, uuid) {
     // Handles when the lobby owner changes the lobby password
     // Validate the password here, maybe check if it's empty or too long or something
     if (lobby.getOwnerUuid() === uuid && data["changeLobbyPassword"]) {
-        if (data["changeLobbyPassword"] === "") {
+        console.log("Lobby password change requested: " + data["password"]);
+        if (data["password"] === "") {
             lobby.setPassword("");
             lobby.setHasPassword(false);
+            console.log("Lobby password removed");
         } else {
-            lobby.setPassword(data["changeLobbyPassword"]);
+            lobby.setPassword(data["password"]);
             lobby.setHasPassword(true);
-            console.log("Lobby password changed to: " + data["changeLobbyPassword"]);
+            console.log("Lobby password changed to: " + data["password"]);
         }
     }
 

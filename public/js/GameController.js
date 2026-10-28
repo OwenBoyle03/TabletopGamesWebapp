@@ -53,7 +53,7 @@ function setLobbyOptionsEventListeners() {
     maxNumberOfPlayersSelect.getCanvas().addEventListener('click', changeLobbySettings);
 
     lobbyPasswordInputField.getCanvas().addEventListener('focus', passwordInputCardFocused);
-    lobbyPasswordInputField.getCanvas().addEventListener('blur', passwordInputCardBlurred);
+    lobbyPasswordInputField.getCanvas().addEventListener('blur', passwordInputCardSubmitted);
     
     startGameButton.getCanvas().addEventListener('click', startGame);
 }
@@ -63,7 +63,7 @@ function removeLobbyOptionsEventListeners() {
     //maxNumberOfPlayersSelect.getCanvas().removeEventListener();
 
     lobbyPasswordInputField.getCanvas().removeEventListener('focus', passwordInputCardFocused);
-    lobbyPasswordInputField.getCanvas().removeEventListener('blur', passwordInputCardBlurred);
+    lobbyPasswordInputField.getCanvas().removeEventListener('blur', passwordInputCardSubmitted);
 
     startGameButton.getCanvas().removeEventListener('click', startGame);
 }
@@ -83,10 +83,33 @@ function passwordInputCardFocused() {
     lobbyPasswordInputField.getCanvas().addEventListener('keydown', handlePasswordInputKeyPress);
 }
 
-function passwordInputCardBlurred() {
+function passwordInputCardSubmitted() {
     lobbyPasswordInputField.toggleOffCursorOverTime();
     lobbyPasswordInputField.getCanvas().removeEventListener('keydown', handlePasswordInputKeyPress);
-    ws.send(JSON.stringify({ "changeLobbyPassword": lobbyPasswordInputField.getCardText() }));
+    lobbyPasswordInputField.getCanvas().blur();
+    ws.send(JSON.stringify({    "changeLobbyPassword": true,
+                                "password": lobbyPasswordInputField.getCardText()
+                            }));
+}
+
+function handleKeyPress(event, card) {
+    if (event.key === 'Backspace') {
+        console.log(card);
+        card.removeLastCharFromCurrentCardText();
+    } else if (event.key.length === 1) {
+        card.addCharToCurrentCardText(event.key);
+    }
+}
+
+function handlePasswordInputKeyPress(event) {
+    if (event.key === 'Backspace') {
+        console.log(lobbyPasswordInputField);
+        lobbyPasswordInputField.removeLastCharFromCurrentCardText();
+    } else if (event.key === 'Enter') {
+        passwordInputCardSubmitted();
+    } else if (event.key.length === 1) {
+        lobbyPasswordInputField.addCharToCurrentCardText(event.key);
+    }
 }
 
 function changeLobbySettings() {
@@ -502,19 +525,6 @@ function turnTimer(endOfTurnTimer) {
     }, 1000);
 
     //setTimeout(endTurnTimer, Date.now() - endOfTurnTimer);
-}
-
-function handleKeyPress(event, card) {
-    if (event.key === 'Backspace') {
-        console.log(card);
-        card.removeLastCharFromCurrentCardText();
-    } else if (event.key.length === 1) {
-        card.addCharToCurrentCardText(event.key);
-    }
-}
-
-function handlePasswordInputKeyPress(event) {
-    handleKeyPress(event, lobbyPasswordInputField);
 }
 /*
 let cursorTimer = null;
