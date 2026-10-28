@@ -1,6 +1,7 @@
 'use strict';
+import ViewCard from './ViewCard.js';
 
-class LobbyCardsView {
+export default class LobbyCardsView {
     constructor() {
         this.lobbyData;
         this.mainCanvas = document.getElementById('main');

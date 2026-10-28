@@ -1,4 +1,5 @@
 'use strict'
+import LobbyCardsView from './LobbyCardsView.js';
 
 async function getLobbies() {
     const response = await fetch('/api/lobbiesAvailable');

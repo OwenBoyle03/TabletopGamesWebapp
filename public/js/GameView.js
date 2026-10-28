@@ -1,6 +1,8 @@
 'use strict'
+import ViewCard from './ViewCard.js';
+import ViewCardEditable from './ViewCardEditable.js';
 
-class GameView {
+export default class GameView {
 
     constructor() {
         this.mainCanvas = document.getElementById('main');

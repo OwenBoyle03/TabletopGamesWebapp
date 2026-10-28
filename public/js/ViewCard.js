@@ -1,14 +1,13 @@
 'use strict'
 
-class ViewCard {
-    constructor(colour, text, width, height, nodeToConnectTo, textEditable = false, textScale = 0.09) {
+export default class ViewCard {
+    constructor(colour, text, width, height, nodeToConnectTo, textScale = 0.09) {
         this.colour = colour;
         this.text = text;
         this.width = width;
         this.height = height;
         // A textScale of 1 would make the text the same size as the height of the card
         this.textScale = textScale;
-        this.cursorDisplayed = false;
 
         if (this.width > this.height) {
             this.cardRadius = width * 0.036;
@@ -27,19 +26,11 @@ class ViewCard {
         //this.canvas.setAttribute('class', classOfCanvas ?? 'default');
         this.canvas.setAttribute('width', ('' + width));
         this.canvas.setAttribute('height', ('' + height));
-        this.canvas.setAttribute('tabindex', '-1');
         this.context = this.canvas.getContext('2d');
 
         nodeToConnectTo.appendChild(this.canvas);
 
-        this.textEditable = textEditable;
-        this.cursorTimer = null;
-
         //this.drawCard();
-    }
-
-    isTextEditable() {
-        return this.textEditable;
     }
 
     getCanvas() {
@@ -71,36 +62,6 @@ class ViewCard {
     changeCardTextCentred(text) {
         this.text = text;
         this.drawCardWithCentredText();
-    }
-
-    addCharToCurrentCardText(char) {
-        this.text += char;
-        this.drawCard();
-    }
-
-    removeLastCharFromCurrentCardText() {
-        this.text = this.text.substring(0, this.text.length - 1);
-        this.drawCard();
-    }
-
-    displayCursorAtEndOfCardText() {
-        this.cursorDisplayed = true;
-        this.drawRoundedRectangle(this.colour, this.height, this.width, this.cardRadius);
-        this.wrapSpecificTextToCard(this.text + "|");
-    }
-
-    removeCursorFromCardText() {
-        /*
-        if (this.text.endsWith("|")) {
-            this.removeLastCharFromCurrentCardText();
-        }
-        */
-        this.cursorDisplayed = false;
-        this.drawCard();
-    }
-
-    hasCursorAtEndOfCardText() {
-        return this.cursorDisplayed;
     }
 
     drawCard() {
@@ -409,24 +370,6 @@ class ViewCard {
 
         // The last parameter is a max width for the text, if the text exceeds this width, it will be scaled down to fit within it
         this.context.fillText("CardZar", (this.width * 0.97), (this.height / 2), (this.width * 0.9));
-    }
-
-    toggleOnCursorOverTime() {
-        this.cursorTimer = setInterval(() => {
-            if (this.hasCursorAtEndOfCardText()) {
-                this.removeCursorFromCardText();
-            } else {
-                this.displayCursorAtEndOfCardText();
-            }
-        }, 500);
-    }
-
-    toggleOffCursorOverTime() {
-        if (this.cursorTimer) {
-            clearInterval(this.cursorTimer);
-            this.cursorTimer = null;
-            this.removeCursorFromCardText();
-        }
     }
 
     // Mouse scaling calculations

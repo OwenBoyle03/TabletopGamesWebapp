@@ -1,4 +1,5 @@
 'use strict'
+import GameView from './GameView.js';
 
 //const { response } = require("express");
 
@@ -41,8 +42,6 @@ function addPlayerCardsIndexes(newPlayerCards) {
     }
     console.log("Player cards indexes: " + playerCardsIndexes);
 }
-
-
 
 function setLobbyOptionsEventListeners() {
     gameModeSelect = view.getGameModeCard();
@@ -87,6 +86,7 @@ function passwordInputCardFocused() {
 function passwordInputCardBlurred() {
     toggleOffCursorOverTime(lobbyPasswordInputField);
     lobbyPasswordInputField.getCanvas().removeEventListener('keydown', handlePasswordInputKeyPress);
+    ws.send(JSON.stringify({ "changeLobbyPassword": lobbyPasswordInputField.getCurrentCardText() }));
 }
 
 function changeLobbySettings() {

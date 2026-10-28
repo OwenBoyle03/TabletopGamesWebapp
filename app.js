@@ -221,6 +221,7 @@ function startLobbyOwnerConnection(ws, lobby, uuid) {
         // Maybe some input sanitization and length checks, but for now just check if it exists
         if (data["username"]) {
             //console.log("Lobby owner set their username to: " + data["username"]);
+            // Turns off the message listener so it doesn't call handleOwnerUsernameMessage
             ws.off('message', handleOwnerUsernameMessage);
             lobby.setOwnerNameAndInitialisePlayersMap(data["username"]);
             // Without this the lobby won't be visible to other players
@@ -368,6 +369,7 @@ function handlePlayerMessage(ws, data, lobby, game, uuid) {
     }
 
     // Handles when the lobby owner changes the lobby password
+    // Validate the password here, maybe check if it's empty or too long or something
     if (lobby.getOwnerUuid() === uuid && data["changeLobbyPassword"]) {
         if (data["changeLobbyPassword"] === "") {
             lobby.setPassword("");
