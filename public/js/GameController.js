@@ -261,19 +261,25 @@ function webSocketMessageHandler(event) {
         ws.send(JSON.stringify({ "username": username }));
         console.log("Username sent: " + username);
 
-    } else if (parsedData["inputPassword"]) {
+    } else if (parsedData["requestAuthentication"]) {
 
         // Prompts the player to enter the lobby password and sends it to the server
         const password = prompt("Please enter the lobby password:");
-        ws.send(JSON.stringify({ "lobbyPassword": password }));
+        ws.send(JSON.stringify({ "password": password }));
         console.log("Lobby password sent: " + password);
 
-    } else if (parsedData["invalidPassword"]) {
+    } else if (parsedData["authenticationFailed"]) {
 
         // Prompts the player to enter a valid lobby password and sends it to the server
         const password = prompt("Invalid lobby password, please enter a valid lobby password:");
-        ws.send(JSON.stringify({ "lobbyPassword": password }));
+        ws.send(JSON.stringify({ "password": password }));
         console.log("Lobby password sent: " + password);
+
+    } else if (parsedData["authenticationCompleteFailure"]) {
+
+        // Prompts the player to enter a valid lobby password and sends it to the server
+        alert("Too many failed attempts, you have been disconnected from the server.");
+        console.log(parsedData["error"]);
 
     } else if (parsedData["firstContact"] && parsedData["isLobbyOwner"]) {
         // Shows the lobby owner options UI and sets the event listeners for the options
@@ -471,6 +477,7 @@ function webSocketMessageHandler(event) {
             */
 
     } else {
+        console.log("Unknown message received from server");
         console.log(parsedData);
         //view.displayWaitingScreen();
         //console.log("You are not the lobby owner");

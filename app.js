@@ -198,7 +198,7 @@ function requestAuthentication(ws, lobby, uuid) {
             numberOfAuthenticationAttempts++;
 
             if (numberOfAuthenticationAttempts >= 5) {
-                ws.send(JSON.stringify({ "authenticationFailed": true, "error": "Too many attempts" }));
+                ws.send(JSON.stringify({ "authenticationCompleteFailure": true, "error": "Too many attempts" }));
                 ws.close();
             }
         }
