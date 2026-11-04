@@ -155,6 +155,10 @@ export default class GameView {
         return this.playerCards;
     }
 
+    getPlayerCard(index) {
+        return this.playerCards[index];
+    }
+
     setPlayerCards(playerCards) {
         for (let i = 0; i < playerCards.length; i++) {
             if (playerCards[i][0] === "Blank Card") {
@@ -340,6 +344,7 @@ export default class GameView {
         }
     }
 
+    /*
     addRelevantEventListenerToPlayerCards(clickHandler, keyPressHandler, numberOfCards) {
         // Have to store the annoymous functions in order to remove the event listeners
         this.playerCardListeners = [];
@@ -355,6 +360,7 @@ export default class GameView {
             }
         }
     }
+        */
 
     removeResponseCardClickListeners(handler) {
         for (let i = 0; i < this.responseCards.length; i++) {
@@ -362,6 +368,7 @@ export default class GameView {
         }
     }
 
+    /*
     removeRelevantEventListenerFromPlayerCards() {
         for (let i = 0; i < this.playerCards.length; i++) {
             if (this.playerCards[i].isTextEditable()) {
@@ -372,6 +379,7 @@ export default class GameView {
             //this.getPlayerCards()[i].getCanvas().removeEventListener('click', this.playerCardListeners[i]);
         }
     }
+        */
 
     checkForSpecificResponseCardClick(handler, i) {
         this.getResponses()[i].getCanvas().addEventListener('click', () => handler(i));

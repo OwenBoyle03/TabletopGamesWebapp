@@ -69,8 +69,6 @@ allLobbies.set(testLobbyId, testLobby);
 testLobby.setOwnerNameAndInitialisePlayersMap("oooooo");
 testLobby.setLobbyOpen(true);
 
-const users = new Map();
-
 app.use(express.static('public'));
 
 function findLobbyByOwnerId(ownerId) {
@@ -159,16 +157,6 @@ app.post('/joinLobby', (req, res) => {
         return res.sendFile(__dirname + '/public/gamePage.html');
         //.json( { message: "Joined lobby" } )
     }
-})
-
-app.post('/api/lobbyOwnerName', (req, res) => {
-    const ownerName = req.body.ownerName;
-    const uuid = req.signedCookies.uuid;
-    users.set(uuid, ownerName);
-
-    const lobbyId = randomUUID();
-    const lobby = new Lobby(ownerName, uuid, "", lobbyId);
-    allLobbies.set(lobbyId, lobby);
 })
 
 wss.on('connection', (ws, req) => {
@@ -362,9 +350,9 @@ function startGameConnection(ws, lobby, uuid) {
     });
 
     game.on('gameWinner', (data) => {
-        console.log(users);
-        console.log("Game winner event: " + users.get(data["winner"]) + ", " + JSON.stringify(data["winner"]));
-        ws.send(JSON.stringify({    "gameWinner": true, "winner": users.get(data["winner"]), "isCardZar": (data["cardZar"] === uuid), 
+        console.log(lobby.getPlayersNames());
+        console.log("Game winner event: " + lobby.getPlayerName(data["winner"]) + ", " + JSON.stringify(data["winner"]));
+        ws.send(JSON.stringify({    "gameWinner": true, "winner": lobby.getPlayerName(data["winner"]), "isCardZar": (data["cardZar"] === uuid), 
                                     "isLobbyOwner": (lobby.getOwnerUuid() === uuid) }));
     });
 

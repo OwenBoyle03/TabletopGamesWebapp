@@ -77,7 +77,7 @@ function setLobbyOptionsEventListeners() {
     gameModeSelect.getCanvas().addEventListener('click', changeLobbySettings);
     maxNumberOfPlayersSelect.getCanvas().addEventListener('click', changeLobbySettings);
 
-    lobbyPasswordInputField.getCanvas().addEventListener('focus', passwordInputCardFocused);
+    lobbyPasswordInputField.getCanvas().addEventListener('click', passwordInputCardClicked);
     proxyInput.addEventListener('blur', passwordInputCardSubmit);
     
     startGameButton.getCanvas().addEventListener('click', startGame);
@@ -87,7 +87,7 @@ function removeLobbyOptionsEventListeners() {
     //gameModeSelect.getCanvas().removeEventListener();
     //maxNumberOfPlayersSelect.getCanvas().removeEventListener();
 
-    lobbyPasswordInputField.getCanvas().removeEventListener('focus', passwordInputCardFocused);
+    lobbyPasswordInputField.getCanvas().removeEventListener('click', passwordInputCardClicked);
     proxyInput.removeEventListener('blur', passwordInputCardSubmit);
     proxyInput.value = "";
 
@@ -96,27 +96,27 @@ function removeLobbyOptionsEventListeners() {
 
 function setInputUsernameCardEventListeners() {
     usernameInputField = view.getInputUsernameCard();
-    usernameInputField.getCanvas().addEventListener('focus', usernameInputCardFocused);
+    usernameInputField.getCanvas().addEventListener('click', usernameInputCardClicked);
     proxyInput.addEventListener('blur', usernameInputCardSubmit);
 }
 
 function removeInputUsernameCardEventListeners() {
-    usernameInputField.getCanvas().removeEventListener('focus', usernameInputCardFocused);
+    usernameInputField.getCanvas().removeEventListener('click', usernameInputCardClicked);
     proxyInput.removeEventListener('blur', usernameInputCardSubmit);
 }
 
 function setInputPasswordCardEventListeners() {
     joinLobbyPasswordInputField = view.getJoinLobbyInputPasswordCard();
-    joinLobbyPasswordInputField.getCanvas().addEventListener('focus', joinLobbyPasswordInputCardFocused);
+    joinLobbyPasswordInputField.getCanvas().addEventListener('click', joinLobbyPasswordInputCardClicked);
     proxyInput.addEventListener('blur', joinLobbyPasswordInputCardSubmit);
 }
 
 function removeInputPasswordCardEventListeners() {
-    joinLobbyPasswordInputField.getCanvas().removeEventListener('focus', joinLobbyPasswordInputCardFocused);
+    joinLobbyPasswordInputField.getCanvas().removeEventListener('click', joinLobbyPasswordInputCardClicked);
     proxyInput.removeEventListener('blur', joinLobbyPasswordInputCardSubmit);
 }
 
-function passwordInputCardFocused() {
+function passwordInputCardClicked() {
 
     lobbyPasswordInputField.toggleOnCursorOverTime();
     proxyInput.focus();
@@ -162,7 +162,7 @@ function checkForPasswordInputCardSubmit(event) {
 
 //let handleUsernameInputKeyPress = null;
 
-function usernameInputCardFocused() {
+function usernameInputCardClicked() {
 
     usernameInputField.toggleOnCursorOverTime();
     proxyInput.focus();
@@ -198,7 +198,7 @@ function checkForUsernameInputCardSubmit(event) {
 
 //let handleJoinLobbyPasswordInputKeyPress = null;
 
-function joinLobbyPasswordInputCardFocused() {
+function joinLobbyPasswordInputCardClicked() {
 
     joinLobbyPasswordInputField.toggleOnCursorOverTime();
     proxyInput.focus();
@@ -230,7 +230,6 @@ function checkForJoinLobbyPasswordInputCardSubmit(event) {
     }
 
 }
-
 
 /*
 function handleKeyPress(event, card) {
@@ -304,7 +303,7 @@ function playerCardClicked(i, responsesAllowed) {
 
     if (clickedPlayerCards.includes(i)) {
 
-        view.getPlayerCards()[i].drawCard();
+        view.getPlayerCard(i).drawCard();
         clickedPlayerCards.splice(clickedPlayerCards.indexOf(i), 1);
         console.log("Clicked Player Cards: " + clickedPlayerCards);
 
@@ -312,12 +311,58 @@ function playerCardClicked(i, responsesAllowed) {
         // Outer (else) if statement checks if the player has already input the max number of cards for the response
 
         if (!clickedPlayerCards.includes(i)) {
-            view.getPlayerCards()[i].highlightCard();
+            view.getPlayerCard(i).highlightCard();
             clickedPlayerCards.push(i);
             console.log("Clicked Player Cards: " + clickedPlayerCards);
+
+            // Checks if this is a blank card
+            if (view.getPlayerCard(i).isTextEditable()) {
+                textInputCardClicked(view.getPlayerCard(i));
+            }
         }
 
     }
+}
+
+let proxyInputBlurHandler = null;
+
+function textInputCardClicked(card) {
+
+    card.toggleOnCursorOverTime();
+    proxyInput.focus();
+    proxyInput.addEventListener('input', card.changeCardTextUsingInputEvent);
+    proxyInput.addEventListener('keydown', checkForTextInputCardFinished);
+
+    proxyInputBlurHandler = () => textInputFinished.bind(this, card);
+
+    proxyInput.addEventListener('blur', proxyInputBlurHandler);
+
+}
+
+function checkForTextInputCardFinished(event) {
+
+    if (event.key === 'Enter') {
+        //textInputFinished(card);
+        // Doing it this way means I don't have to remove the event listeners from the proxy
+        // input and can just blur it to trigger the submit function
+        proxyInput.blur();
+    }
+
+}
+
+function textInputFinished(card) {
+
+    /*
+    proxyInput.removeEventListener('keydown', checkForUsernameInputCardSubmit);
+    proxyInput.removeEventListener('input', usernameInputField.changeCardTextUsingInputEvent);
+    */
+    card.toggleOffCursorOverTime();
+    proxyInput.removeEventListener('blur', proxyInputBlurHandler);
+    console.log("Blank card set to: " + card.getCardText());
+
+    proxyInput.value = "";
+    proxyInputBlurHandler = null;
+    
 }
 
 // Removes the event listeners and buttons for the cardZar and clears all previous input
@@ -328,9 +373,29 @@ function removeCardZarInput() {
     clickedResponseCard = null;
 }
 
+const playerCardListeners = [];
+
+function addEventListenersToPlayerCards(numberOfCards) {
+    // Have to store the annoymous functions in order to remove the event listeners
+
+    for (let i = 0; i < view.getPlayerCards().length; i++) {
+        const listener = () => playerCardClicked(i, numberOfCards);
+        playerCardListeners.push(listener);
+        view.getPlayerCard(i).getCanvas().addEventListener('click', listener);
+    }
+}
+
+function removeEventListenersFromPlayerCards() {
+        
+    for (let i = 0; i < view.getPlayerCards().length; i++) {
+        view.getPlayerCard(i).getCanvas().removeEventListener('click', playerCardListeners[i]);
+    }
+
+}
+
 // Removes the event listeners and buttons for the player and clears all previous input
 function removePlayerInput() {
-    view.removeRelevantEventListenerFromPlayerCards();
+    removeEventListenersFromPlayerCards();
     view.removeSubmitButtonEventListener();
     view.removeSubmitButton();
 
@@ -361,12 +426,18 @@ function playerSubmit(responsesAllowed) {
 
     if (clickedPlayerCards.length === responsesAllowed) {
 
-        const clickedPlayerCardsIndexes = [];
+        // Don't particularly like using an array for both indexes and raw text, but it works for now
+        const clickedPlayerCardsIndexesAndBlankTexts = [];
+        //const blankCardTexts = [];
         for (let i = 0; i < clickedPlayerCards.length; i++) {
-            clickedPlayerCardsIndexes.push(playerCardsIndexes[clickedPlayerCards[i]]);
+            if (view.getPlayerCard(clickedPlayerCards[i]).isTextEditable()) {
+                clickedPlayerCardsIndexesAndBlankTexts.push(view.getPlayerCard(clickedPlayerCards[i]).getCardText());
+            } else {
+                clickedPlayerCardsIndexesAndBlankTexts.push(playerCardsIndexes[clickedPlayerCards[i]]);
+            }
         }
 
-        sendPlayerCards({ "chosenPlayerCards": clickedPlayerCardsIndexes });
+        sendPlayerCards({ "chosenPlayerCards": clickedPlayerCardsIndexesAndBlankTexts });
 
         removePlayerInput();
 
@@ -521,7 +592,7 @@ function webSocketMessageHandler(event) {
             //view.setCardZar("");
         } else {
             //view.setCardZar(parsedData["cardZar"]);
-            view.addRelevantEventListenerToPlayerCards(playerCardClicked, handleKeyPress, parsedData["numberOfResponseCardsAllowed"]);
+            addEventListenersToPlayerCards(parsedData["numberOfResponseCardsAllowed"]);
             view.addSubmitButton();
             view.addSubmitButtonEventListener(playerSubmit.bind(this, parsedData["numberOfResponseCardsAllowed"]));
         }
