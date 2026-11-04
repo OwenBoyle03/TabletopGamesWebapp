@@ -13,6 +13,10 @@ import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// This is here to allow the server to be tested because the secure cookie option requires HTTPS
+// and localhost is not HTTPS
+const isProduction = process.env.NODE_ENV === 'production';
+
 // This is so the server can understand multipart/form-data
 // which is for more complex form data like files and
 // when using the formData object in javascript to send
@@ -24,7 +28,10 @@ const upload = multer();
 const app = express();
 
 app.use(express.static('public'));
-app.use(express.json());
+
+// Limits the size of the request body to 10kb
+app.use(express.json( { limit: '10kb' } ));
+
 app.use(express.urlencoded({ extended: true }));
 // const cookieParserKey = "";
 const cookieParserKey = "" + fs.readFileSync('./cookieParserKey.txt');
@@ -38,7 +45,8 @@ app.set('views', __dirname + "/views");
 import http from 'http';
 import req from "express/lib/request.js";
 
-const hostname = 'localhost';
+//const hostname = 'localhost';
+const hostname = '0.0.0.0';
 
 const server = http.createServer(app);
 // The server inside the curly brackets allows the websocket
@@ -100,14 +108,16 @@ app.get('/api/lobbiesAvailable', (req, res) => {
 
 // Can't join the lobby until the user has set their username
 app.get('/createLobby', (req, res) => {
+    console.log("Made it to createLobby");
     const uuid = randomUUID();
     const lobbyId = randomUUID();
 
-    res.cookie("uuid", uuid, { signed: true, httpOnly: true, secure: true, sameSite: true });
-    res.cookie("lobbyId", lobbyId, { signed: true, httpOnly: true, secure: true, sameSite: true });
-
     const lobby = new Lobby(uuid, "", lobbyId);
     allLobbies.set(lobbyId, lobby);
+
+    res.cookie("uuid", uuid, { signed: true, httpOnly: true, secure: isProduction, sameSite: true });
+    res.cookie("lobbyId", lobbyId, { signed: true, httpOnly: true, secure: isProduction, sameSite: true });
+
     // Gets added to openLobbies when the lobby owner sets their username
     //openLobbies.set(lobbyId, lobby);
 
@@ -115,19 +125,39 @@ app.get('/createLobby', (req, res) => {
 })
 
 app.post('/joinLobby', (req, res) => {
+    console.log("Made it to joinLobby");
     
     const lobbyId = req.body.lobbyId;
+
+    // Check for valid lobbyId here, if not valid send back an error message
+    if (typeof lobbyId !== 'string' || (!/^[0-9a-f-]{36}$/i.test(lobbyId)) || lobbyId.length !== 36) {
+        //res.json({ error: "Invalid lobby ID" });
+        //return;
+        // Http status code 400 means server can't process the request
+        // because it considers the request invalid
+        return res.status(400).json({ error: "Invalid lobby ID" });
+    }
+
+    // Check if the lobby exists
     const lobby = allLobbies.get(lobbyId);
 
+    if (!lobby) {
+        // Http status code 404 means the requested resource doesn't exist
+        return res.status(404).json({ error: "Lobby not found" });
+    }
+
+    // Could add a check in this if statement to check if the lobby has started
+    // but I might just filter it out of the open lobbies pool instead
     // Checks to see if the lobby is full
-    if (lobby.getNumberOfPlayers() < lobby.getMaxNumberOfPlayers()) {
-
-        res.cookie("uuid", randomUUID(), { signed: true, httpOnly: true, secure: true, sameSite: true });
-        res.cookie("lobbyId", lobbyId, { signed: true, httpOnly: true, secure: true, sameSite: true });
-        res.sendFile(__dirname + '/public/gamePage.html');
-
+    if ((lobby.getNumberOfPlayers() >= lobby.getMaxNumberOfPlayers())) {
+        // Http status code 409 means server understood the request but can't complete it
+        // because it conflicts with the current state of a resource
+        return res.status(409).json({ error: "Lobby is full" });
     } else {
-        res.json({ error: "Lobby is full" });
+        res.cookie("uuid", randomUUID(), { signed: true, httpOnly: true, secure: isProduction, sameSite: true });
+        res.cookie("lobbyId", lobbyId, { signed: true, httpOnly: true, secure: isProduction, sameSite: true });
+        return res.sendFile(__dirname + '/public/gamePage.html');
+        //.json( { message: "Joined lobby" } )
     }
 })
 
@@ -142,6 +172,7 @@ app.post('/api/lobbyOwnerName', (req, res) => {
 })
 
 wss.on('connection', (ws, req) => {
+    console.log(cookie.parse(req.headers.cookie ?? ''));
 
     const cookies = cookie.parse(req.headers.cookie ?? '');
 
@@ -150,6 +181,10 @@ wss.on('connection', (ws, req) => {
 
     const lobby = allLobbies.get(lobbyId);
     //console.log(lobby.getLobbyDisplayData());
+
+    console.log("Lobby ID: " + lobbyId);
+    console.log("Lobby: " + lobby);
+    console.log("UUID: " + uuid);
 
     if (!lobby) {
         ws.send(JSON.stringify({ "error": "Lobby not found" }));
@@ -401,7 +436,6 @@ function handlePlayerMessage(ws, data, lobby, game, uuid) {
         game.startGame();
     }
 }
-
 
 server.listen(port, hostname, () => {
     console.log(`Example app listening at http://${hostname}:${port}`)

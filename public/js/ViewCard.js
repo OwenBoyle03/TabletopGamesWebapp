@@ -63,6 +63,7 @@ export default class ViewCard {
     }
 
     changeCardText(text) {
+        //console.log("Changing card text to: " + text);
         this.text = text;
         this.drawCard();
     }

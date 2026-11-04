@@ -1,15 +1,17 @@
 html {
     margin: 0;
-    height: 100%;
-    overflow: hidden;
+    /*height: 100%;
+    /*overflow: hidden;*/
     background-color: #242526;
     color: white;
 }
 
 body {
     margin: 0;
-    /*height: 100%;*/
-    overflow: hidden;
+    /*
+    These prevent scrolling
+    height: 100%;*/
+    /*overflow: hidden;*/
 }
 
 h1 {
@@ -42,10 +44,26 @@ canvas {
     /*padding: 1vmin;*/
 }
 
+@media (max-aspect-ratio: 1/1) {
+
+#lobbies canvas {
+    /*height: 22vh;
+    width: auto;*/
+    height: auto;
+    width: 45vw;
+    flex: 0 0 auto;
+}
+
+}
+
+@media (min-aspect-ratio: 1/1) {
+
 #lobbies canvas {
     height: 22vh;
     width: auto;
     flex: 0 0 auto;
+}
+
 }
 
 .centered {

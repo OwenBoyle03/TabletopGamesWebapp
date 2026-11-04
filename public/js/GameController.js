@@ -12,6 +12,8 @@ import GameView from './GameView.js';
 //const model = new GameModel();
 
 const waitingScreen = document.getElementById('waitingScreen');
+const proxyInput = document.createElement('input');
+setUpHiddenProxyInput();
 
 const view = new GameView();
 
@@ -21,12 +23,35 @@ let clickedPlayerCards = [];
 let responseChoices = [];
 let playerCardsIndexes = [];
 
-const ws = new WebSocket('ws://localhost:3000');
+//const ws = new WebSocket('ws://localhost:3000');
+const ws = new WebSocket(`ws://${window.location.host}`);
 
 let gameModeSelect = view.getGameModeCard();
 let maxNumberOfPlayersSelect = view.getMaxNumberOfPlayersCard();
 let lobbyPasswordInputField = view.getLobbyPasswordCard();
 let startGameButton = view.getStartButtonCard();
+
+let usernameInputField = view.getInputUsernameCard();
+let joinLobbyPasswordInputField = view.getJoinLobbyInputPasswordCard();
+
+function setUpHiddenProxyInput() {
+    proxyInput.type = "text";
+    proxyInput.style.position = "fixed";
+    proxyInput.style.opacity = "0";
+    proxyInput.style.left = "50%";
+    proxyInput.style.top = "50%";
+    proxyInput.style.transform = "translate(-50%, -50%)";
+    proxyInput.style.fontSize = "16px";
+    document.body.appendChild(proxyInput);
+}
+
+function removeHiddenProxyInput() {
+    document.body.removeChild(proxyInput);
+}
+
+function openMobileKeyboard() {
+    proxyInput.focus();
+}
 
 function setPlayerCardsIndexes(playerCards) {
     playerCardsIndexes = [];
@@ -53,7 +78,7 @@ function setLobbyOptionsEventListeners() {
     maxNumberOfPlayersSelect.getCanvas().addEventListener('click', changeLobbySettings);
 
     lobbyPasswordInputField.getCanvas().addEventListener('focus', passwordInputCardFocused);
-    lobbyPasswordInputField.getCanvas().addEventListener('blur', passwordInputCardSubmitted);
+    proxyInput.addEventListener('blur', passwordInputCardSubmit);
     
     startGameButton.getCanvas().addEventListener('click', startGame);
 }
@@ -63,35 +88,151 @@ function removeLobbyOptionsEventListeners() {
     //maxNumberOfPlayersSelect.getCanvas().removeEventListener();
 
     lobbyPasswordInputField.getCanvas().removeEventListener('focus', passwordInputCardFocused);
-    lobbyPasswordInputField.getCanvas().removeEventListener('blur', passwordInputCardSubmitted);
+    proxyInput.removeEventListener('blur', passwordInputCardSubmit);
+    proxyInput.value = "";
 
     startGameButton.getCanvas().removeEventListener('click', startGame);
 }
 
-function textInputCardFocused(card) {
-    card.toggleOnCursorOverTime();
-    card.getCanvas().addEventListener('keydown', handleKeyPress);
+function setInputUsernameCardEventListeners() {
+    usernameInputField = view.getInputUsernameCard();
+    usernameInputField.getCanvas().addEventListener('focus', usernameInputCardFocused);
+    proxyInput.addEventListener('blur', usernameInputCardSubmit);
 }
 
-function textInputCardBlurred(card) {
-    card.toggleOffCursorOverTime();
-    card.getCanvas().removeEventListener('keydown', handleKeyPress);
+function removeInputUsernameCardEventListeners() {
+    usernameInputField.getCanvas().removeEventListener('focus', usernameInputCardFocused);
+    proxyInput.removeEventListener('blur', usernameInputCardSubmit);
+}
+
+function setInputPasswordCardEventListeners() {
+    joinLobbyPasswordInputField = view.getJoinLobbyInputPasswordCard();
+    joinLobbyPasswordInputField.getCanvas().addEventListener('focus', joinLobbyPasswordInputCardFocused);
+    proxyInput.addEventListener('blur', joinLobbyPasswordInputCardSubmit);
+}
+
+function removeInputPasswordCardEventListeners() {
+    joinLobbyPasswordInputField.getCanvas().removeEventListener('focus', joinLobbyPasswordInputCardFocused);
+    proxyInput.removeEventListener('blur', joinLobbyPasswordInputCardSubmit);
 }
 
 function passwordInputCardFocused() {
+
     lobbyPasswordInputField.toggleOnCursorOverTime();
-    lobbyPasswordInputField.getCanvas().addEventListener('keydown', handlePasswordInputKeyPress);
+    proxyInput.focus();
+    // lobbyPasswordInputField.getCanvas().addEventListener('keydown', handlePasswordInputKeyPress);
+    // keydown event detects each individual key press and if a key is held down it will send multiple keydown events
+    // input event detects when the value of an input element has changed, returns the entire value of the text
+    // Still need a keydown event for the enter key to submit
+    proxyInput.addEventListener('input', lobbyPasswordInputField.changeCardTextUsingInputEvent);
+    proxyInput.addEventListener('keydown', checkForPasswordInputCardSubmit);
+
 }
 
-function passwordInputCardSubmitted() {
+function passwordInputCardSubmit() {
+
+    proxyInput.removeEventListener('keydown', checkForPasswordInputCardSubmit);
+    proxyInput.removeEventListener('input', lobbyPasswordInputField.changeCardTextUsingInputEvent);
     lobbyPasswordInputField.toggleOffCursorOverTime();
-    lobbyPasswordInputField.getCanvas().removeEventListener('keydown', handlePasswordInputKeyPress);
-    lobbyPasswordInputField.getCanvas().blur();
+    /*
+    proxyInput.removeEventListener('blur', passwordInputCardSubmit);
+    proxyInput.blur();
+    proxyInput.addEventListener('blur', passwordInputCardSubmit);
+    */
+    // May need to blur the proxy input to close the mobile keyboard and remove the event listeners from the proxy input
+    // I may also need to remove event listeners from the mobile input on this card specifically
+    // since it stays and can be interacted with again
+    //lobbyPasswordInputField.getCanvas().blur();
     ws.send(JSON.stringify({    "changeLobbyPassword": true,
                                 "password": lobbyPasswordInputField.getCardText()
                             }));
+    
 }
 
+function checkForPasswordInputCardSubmit(event) {
+
+    if (event.key === 'Enter') {
+        //passwordInputCardSubmit();
+        // Doing it this way means I don't have to remove the event listeners from the proxy
+        // input and can just blur it to trigger the submit function
+        proxyInput.blur();
+    }
+
+}
+
+//let handleUsernameInputKeyPress = null;
+
+function usernameInputCardFocused() {
+
+    usernameInputField.toggleOnCursorOverTime();
+    proxyInput.focus();
+    //usernameInputField.getCanvas().addEventListener('keydown', handleUsernameInputKeyPress);
+    proxyInput.addEventListener('input', usernameInputField.changeCardTextUsingInputEvent);
+    proxyInput.addEventListener('keydown', checkForUsernameInputCardSubmit);
+    
+}
+
+function usernameInputCardSubmit() {
+
+    proxyInput.removeEventListener('keydown', checkForUsernameInputCardSubmit);
+    proxyInput.removeEventListener('input', usernameInputField.changeCardTextUsingInputEvent);
+    usernameInputField.toggleOffCursorOverTime();
+    removeInputUsernameCardEventListeners();
+    proxyInput.blur();
+    ws.send(JSON.stringify({ "username": usernameInputField.getCardText() }));
+    console.log("Username sent: " + usernameInputField.getCardText());
+
+    proxyInput.value = "";
+    view.hideInputUsernameCard();
+
+}
+
+function checkForUsernameInputCardSubmit(event) {
+
+    if (event.key === 'Enter') {
+        usernameInputCardSubmit();
+    }
+
+}
+
+
+//let handleJoinLobbyPasswordInputKeyPress = null;
+
+function joinLobbyPasswordInputCardFocused() {
+
+    joinLobbyPasswordInputField.toggleOnCursorOverTime();
+    proxyInput.focus();
+    //joinLobbyPasswordInputField.getCanvas().addEventListener('keydown', handleJoinLobbyPasswordInputKeyPress);
+    proxyInput.addEventListener('input', joinLobbyPasswordInputField.changeCardTextUsingInputEvent);
+    proxyInput.addEventListener('keydown', checkForJoinLobbyPasswordInputCardSubmit);
+
+}
+
+function joinLobbyPasswordInputCardSubmit() {
+
+    proxyInput.removeEventListener('keydown', checkForJoinLobbyPasswordInputCardSubmit);
+    proxyInput.removeEventListener('input', joinLobbyPasswordInputField.changeCardTextUsingInputEvent);
+    joinLobbyPasswordInputField.toggleOffCursorOverTime();
+    removeInputPasswordCardEventListeners();
+    proxyInput.blur();
+    ws.send(JSON.stringify({ "password": joinLobbyPasswordInputField.getCardText() }));
+    console.log("Lobby password sent: " + joinLobbyPasswordInputField.getCardText());
+
+    proxyInput.value = "";
+    view.hideJoinLobbyInputPasswordCard();
+
+}
+
+function checkForJoinLobbyPasswordInputCardSubmit(event) {
+
+    if (event.key === 'Enter') {
+        joinLobbyPasswordInputCardSubmit();
+    }
+
+}
+
+
+/*
 function handleKeyPress(event, card) {
     if (event.key === 'Backspace') {
         console.log(card);
@@ -100,15 +241,16 @@ function handleKeyPress(event, card) {
         card.addCharToCurrentCardText(event.key);
     }
 }
+    */
 
-function handlePasswordInputKeyPress(event) {
+function handleKeyPressWithSubmission(event, card, submitFunction) {
     if (event.key === 'Backspace') {
-        console.log(lobbyPasswordInputField);
-        lobbyPasswordInputField.removeLastCharFromCurrentCardText();
+        console.log(card);
+        card.removeLastCharFromCurrentCardText();
     } else if (event.key === 'Enter') {
-        passwordInputCardSubmitted();
+        submitFunction();
     } else if (event.key.length === 1) {
-        lobbyPasswordInputField.addCharToCurrentCardText(event.key);
+        card.addCharToCurrentCardText(event.key);
     }
 }
 
@@ -272,31 +414,55 @@ function webSocketMessageHandler(event) {
     if (parsedData["setUsername"]) {
 
         // Sets the username for the player and sends it to the server
+
+        /*
         const username = prompt("Please enter your username:");
         ws.send(JSON.stringify({ "username": username }));
         console.log("Username sent: " + username);
+        */
+
+        view.displayInputUsernameCard();
+        setInputUsernameCardEventListeners();
 
     } else if (parsedData["invalidUsername"]) {
         console.log(parsedData["invalidUsername"]);
 
         // Prompts the player to enter a valid username and sends it to the server
+
+        /*
         const username = prompt("Invalid username, please enter a valid username:");
         ws.send(JSON.stringify({ "username": username }));
         console.log("Username sent: " + username);
+        */
+
+        view.displayInvalidUsernameInputCard();
+        setInputUsernameCardEventListeners();
 
     } else if (parsedData["requestAuthentication"]) {
 
         // Prompts the player to enter the lobby password and sends it to the server
+
+        /*
         const password = prompt("Please enter the lobby password:");
         ws.send(JSON.stringify({ "password": password }));
         console.log("Lobby password sent: " + password);
+        */
+
+        view.displayJoinLobbyInputPasswordCard();
+        setInputPasswordCardEventListeners();
 
     } else if (parsedData["authenticationFailed"]) {
 
         // Prompts the player to enter a valid lobby password and sends it to the server
+
+        /*
         const password = prompt("Invalid lobby password, please enter a valid lobby password:");
         ws.send(JSON.stringify({ "password": password }));
         console.log("Lobby password sent: " + password);
+        */
+
+        view.displayInvalidPasswordInputCard();
+        setInputPasswordCardEventListeners();
 
     } else if (parsedData["authenticationCompleteFailure"]) {
 
@@ -526,37 +692,6 @@ function turnTimer(endOfTurnTimer) {
 
     //setTimeout(endTurnTimer, Date.now() - endOfTurnTimer);
 }
-/*
-let cursorTimer = null;
-
-/*
-function toggleOnCursorOverTime(card) {
-    cursorTimer = setInterval(() => {
-        if (card.hasCursorAtEndOfCardText()) {
-            card.removeCursorFromCardText();
-        } else {
-            card.displayCursorAtEndOfCardText();
-        }
-    }, 500);
-}
-
-function toggleOffCursorOverTime(card) {
-    if (cursorTimer) {
-        clearInterval(cursorTimer);
-        cursorTimer = null;
-        card.removeCursorFromCardText();
-    }
-}
-    */
-
-/*
-function endTurnTimer() {
-    if (timer) {
-        clearInterval(timer);
-        timer = null;
-    }
-}
-*/
 
 function updatePageBasedOnGameStateData() {
 

@@ -25,6 +25,9 @@ export default class GameView {
         this.startButtonCard = null;
         this.gameWinnerScreen = null;
 
+        this.inputUsernameCard = null;
+        this.joinLobbyInputPasswordCard = null;
+
         this.turnTimerDiv = document.getElementById('turnTimer');
         this.turnTimerCard = null;
 
@@ -74,6 +77,14 @@ export default class GameView {
 
     getStartButtonCard() {
         return this.startButtonCard;
+    }
+
+    getInputUsernameCard() {
+        return this.inputUsernameCard;
+    }
+
+    getJoinLobbyInputPasswordCard() {
+        return this.joinLobbyInputPasswordCard;
     }
 
     getBlackCard() {
@@ -198,6 +209,7 @@ export default class GameView {
         for (let i = 0; i < 10; i++) {
             this.playerCards[i].drawCard();
         }
+
     }
 
     displayAllPlayersChoiceCards() {
@@ -367,6 +379,37 @@ export default class GameView {
 
     checkForSpecificPlayerCardClick(handler, i) {
         this.getPlayerCards()[i].getCanvas().addEventListener('click', () => handler(i));
+    }
+
+    displayInputUsernameCard() {
+        this.inputUsernameCard = new ViewCardEditable("white", "Choose a username: \n", this.cardHeight, this.cardHeight, this.informationAndOptionsDiv, "centre");
+        this.inputUsernameCard.drawCard();
+    }
+
+    displayInvalidUsernameInputCard() {
+        this.inputUsernameCard = new ViewCardEditable("white", "That username was not valid, please choose a valid username: \n", this.cardHeight, this.cardHeight, this.informationAndOptionsDiv, "centre");
+        this.inputUsernameCard.drawCard();
+    }
+
+    hideInputUsernameCard() {
+        console.log(this.inputUsernameCard);
+        this.inputUsernameCard.removeCanvas();
+        this.inputUsernameCard = null;
+    }
+
+    displayJoinLobbyInputPasswordCard() {
+        this.joinLobbyInputPasswordCard = new ViewCardEditable("white", "Input the lobby password: \n", this.cardHeight, this.cardHeight, this.informationAndOptionsDiv, "centre");
+        this.joinLobbyInputPasswordCard.drawCard();
+    }
+
+    displayInvalidPasswordInputCard() {
+        this.joinLobbyInputPasswordCard = new ViewCardEditable("white", "Invalid password, please input the correct lobby password: \n", this.cardHeight, this.cardHeight, this.informationAndOptionsDiv, "centre");
+        this.joinLobbyInputPasswordCard.drawCard();
+    }
+
+    hideJoinLobbyInputPasswordCard() {
+        this.joinLobbyInputPasswordCard.removeCanvas();
+        this.joinLobbyInputPasswordCard = null;
     }
 
     displayLobbyOwnerOptionsUI() {

@@ -98,8 +98,8 @@ multiple responses from each player.
 #playersScores canvas {
     padding: 2vh;
     /*height: 8vh;*/
-    height: 25vh;
-    width: auto;
+    height: auto;
+    width: 70vw;
     max-width: fit-content;
     margin: 1vh;
 }

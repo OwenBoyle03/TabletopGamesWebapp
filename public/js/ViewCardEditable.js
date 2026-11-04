@@ -2,12 +2,12 @@
 import ViewCard from './ViewCard.js';
 
 export default class ViewCardEditable extends ViewCard {
-    constructor(colour, text, width, height, nodeToConnectTo, textDisplayStyle = "normal", textScale = 0.09) {
-        super(colour, text, width, height, nodeToConnectTo, textScale);
+    constructor(colour, unchangableText, width, height, nodeToConnectTo, textDisplayStyle = "normal", textScale = 0.09) {
+        super(colour, unchangableText, width, height, nodeToConnectTo, textScale);
 
         // Kind of a hack, but this is needed to make sure that the unchangable text is always displayed
         // Basically for password input (May become an issue)
-        this.unchangableText = text;
+        this.unchangableText = unchangableText;
         this.text = "";
         this.cursorDisplayed = false;
         this.cursorTimer = null;
@@ -38,6 +38,14 @@ export default class ViewCardEditable extends ViewCard {
             this.drawRoundedRectangle(this.colour, this.height, this.width, this.cardRadius);
             this.wrapSpecificTextToCardCentred(this.unchangableText + this.text);
         }
+    }
+
+    // Making this an arrow function preserves the context of "this" since it is passed an event
+    // that would otherwise change the context of "this" preventing access to the classes functions using this.functionName()
+    changeCardTextUsingInputEvent = (event) => {
+        //console.log("Changing card text to: " + event.target.value);
+        this.text = event.target.value;
+        this.drawCard();
     }
 
     addCharToCurrentCardText(char) {
