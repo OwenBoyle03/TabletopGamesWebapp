@@ -385,6 +385,8 @@ function handlePlayerMessage(ws, data, lobby, game, uuid) {
         game.addToWhiteCardResponses(uuid, data["chosenPlayerCards"]);
     }
 
+    // Could do this by just seeing how many cards the player sent and sending that many immediately
+    // after the player has sent them
     // Handles when a player requests new white card(s) from the server
     if (data["getWhiteCard"]) {
         console.log(JSON.stringify(data));

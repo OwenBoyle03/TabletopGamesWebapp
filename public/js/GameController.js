@@ -1,15 +1,7 @@
 'use strict'
 import GameView from './GameView.js';
 
-//const { response } = require("express");
-
-//import { response } from "express";
-
-//import { WebSocket } from "./ws.js";
-
 //const socket = io();
-
-//const model = new GameModel();
 
 const waitingScreen = document.getElementById('waitingScreen');
 const proxyInput = document.createElement('input');
@@ -377,6 +369,9 @@ const playerCardListeners = [];
 
 function addEventListenersToPlayerCards(numberOfCards) {
     // Have to store the annoymous functions in order to remove the event listeners
+
+    playerCardListeners.length = 0; // Clear the array before adding new listeners
+    //playerCardListeners = []; // Clear the array before adding new listeners
 
     for (let i = 0; i < view.getPlayerCards().length; i++) {
         const listener = () => playerCardClicked(i, numberOfCards);
@@ -748,6 +743,9 @@ function webSocketMessageHandler(event) {
 let timer = null;
 
 function turnTimer(endOfTurnTimer) {
+    // Causing the timer to be 2 seconds slow on the client side
+    //view.displayTurnTimer(Math.ceil((endOfTurnTimer - Date.now()) / 1000));
+    endOfTurnTimer = (Date.now() + 30000);
     view.displayTurnTimer(Math.ceil((endOfTurnTimer - Date.now()) / 1000));
     timer = setInterval(() => {
         const timeRemaining = endOfTurnTimer - Date.now();
@@ -762,8 +760,4 @@ function turnTimer(endOfTurnTimer) {
     }, 1000);
 
     //setTimeout(endTurnTimer, Date.now() - endOfTurnTimer);
-}
-
-function updatePageBasedOnGameStateData() {
-
 }
