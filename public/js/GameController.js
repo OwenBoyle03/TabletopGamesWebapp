@@ -704,7 +704,7 @@ function webSocketMessageHandler(event) {
     } else if (parsedData["ping"]) {
 
         console.log("Ping received from server");
-        ws.send(JSON.stringify({ "pong": true }));
+        ws.send(JSON.stringify({ "ping": true }));
 
     } else if (parsedData["blackCard"]) {
         // Displays the black card

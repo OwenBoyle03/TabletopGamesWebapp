@@ -1,5 +1,5 @@
 import express from 'express';
-import {body, validationResult} from 'express-validator';
+//import {body, validationResult} from 'express-validator';
 import cookie from 'cookie';
 import cookieParser from 'cookie-parser';
 import { randomUUID } from 'crypto';
@@ -9,6 +9,7 @@ import fs from 'fs';
 import { WebSocketServer } from 'ws';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import * as z from 'zod';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -106,7 +107,7 @@ app.get('/api/lobbiesAvailable', (req, res) => {
 
 // Can't join the lobby until the user has set their username
 app.get('/createLobby', (req, res) => {
-    console.log("Made it to createLobby");
+    //console.log("Made it to createLobby");
     const uuid = randomUUID();
     const lobbyId = randomUUID();
 
@@ -122,22 +123,33 @@ app.get('/createLobby', (req, res) => {
     res.sendFile(__dirname + '/public/gamePage.html');
 })
 
+const lobbyIdSchema = z.uuid();
+const uuidSchema = z.uuid();
+
 app.post('/joinLobby', (req, res) => {
-    console.log("Made it to joinLobby");
+    //console.log("Made it to joinLobby");
     
     const lobbyId = req.body.lobbyId;
 
     // Check for valid lobbyId here, if not valid send back an error message
+    /*
     if (typeof lobbyId !== 'string' || (!/^[0-9a-f-]{36}$/i.test(lobbyId)) || lobbyId.length !== 36) {
         //res.json({ error: "Invalid lobby ID" });
         //return;
+        return res.status(400).json({ error: "Invalid lobby ID" });
+    }
+    */
+
+    const lobbyIDResult = lobbyIdSchema.safeParse(lobbyId);
+
+    if (!lobbyIDResult.success) {
         // Http status code 400 means server can't process the request
         // because it considers the request invalid
         return res.status(400).json({ error: "Invalid lobby ID" });
     }
 
     // Check if the lobby exists
-    const lobby = allLobbies.get(lobbyId);
+    const lobby = allLobbies.get(lobbyIDResult.data);
 
     if (!lobby) {
         // Http status code 404 means the requested resource doesn't exist
@@ -153,7 +165,7 @@ app.post('/joinLobby', (req, res) => {
         return res.status(409).json({ error: "Lobby is full" });
     } else {
         res.cookie("uuid", randomUUID(), { signed: true, httpOnly: true, secure: isProduction, sameSite: true });
-        res.cookie("lobbyId", lobbyId, { signed: true, httpOnly: true, secure: isProduction, sameSite: true });
+        res.cookie("lobbyId", lobbyIDResult.data, { signed: true, httpOnly: true, secure: isProduction, sameSite: true });
         return res.sendFile(__dirname + '/public/gamePage.html');
         //.json( { message: "Joined lobby" } )
     }
@@ -167,12 +179,21 @@ wss.on('connection', (ws, req) => {
     const lobbyId = cookieParser.signedCookie(cookies.lobbyId, cookieParserKey);
     const uuid = cookieParser.signedCookie(cookies.uuid, cookieParserKey);
 
-    const lobby = allLobbies.get(lobbyId);
+    const lobbyIDResult = lobbyIdSchema.safeParse(lobbyId);
+    const uuidResult = uuidSchema.safeParse(uuid);
+
+    if (!lobbyIDResult.success || !uuidResult.success) {
+        ws.send(JSON.stringify({ "error": "Invalid lobby ID or UUID" }));
+        ws.close();
+        return;
+    }
+
+    const lobby = allLobbies.get(lobbyIDResult.data);
     //console.log(lobby.getLobbyDisplayData());
 
-    console.log("Lobby ID: " + lobbyId);
+    console.log("Lobby ID: " + lobbyIDResult.data);
     console.log("Lobby: " + lobby);
-    console.log("UUID: " + uuid);
+    console.log("UUID: " + uuidResult.data);
 
     if (!lobby) {
         ws.send(JSON.stringify({ "error": "Lobby not found" }));
@@ -201,17 +222,7 @@ function authenticatePlayer(ws, lobby, uuid) {
 
 }
 
-function inputValidation(data) {
-
-}
-
-function inputSanitization(data) {
-
-}
-
-function inputEscaping(data) {
-
-}
+const passwordSchema = z.string().min(1).max(100);
 
 function requestAuthentication(ws, lobby, uuid) {
 
@@ -223,8 +234,17 @@ function requestAuthentication(ws, lobby, uuid) {
         data = JSON.parse(data);
 
         // Add whatever validation is necessary I don't know yet
-        // Maybe some input sanitization and length checks, but for now just check if it exists
-        if (lobby.getPassword() === data["password"]) {
+        // Maybe some input sanitization and length checks
+        const passwordResult = passwordSchema.safeParse(data["password"]);
+        /*
+        if (!passwordResult.success) {
+            ws.send(JSON.stringify({ "error": "Invalid password format" }));
+            ws.close();
+            return;
+        }
+            */
+
+        if (lobby.getPassword() === passwordResult.data) {
             ws.send(JSON.stringify({ "authenticationSuccess": true }));
             ws.off('message', handleAuthenticationMessage);
             authenticatePlayer(ws, lobby, uuid);
@@ -235,6 +255,7 @@ function requestAuthentication(ws, lobby, uuid) {
             if (numberOfAuthenticationAttempts >= 5) {
                 ws.send(JSON.stringify({ "authenticationCompleteFailure": true, "error": "Too many attempts" }));
                 ws.close();
+                return;
             }
         }
     }
@@ -242,6 +263,8 @@ function requestAuthentication(ws, lobby, uuid) {
     ws.on('message', handleAuthenticationMessage);
 
 }
+
+const usernameSchema = z.string().trim().min(1).max(20).regex(/^[a-zA-Z0-9_]+$/);
 
 // Makes the owner set their username and the makes the lobby visible to other players
 function startLobbyOwnerConnection(ws, lobby, uuid) {
@@ -252,18 +275,29 @@ function startLobbyOwnerConnection(ws, lobby, uuid) {
     function handleOwnerUsernameMessage(data) {
         data = JSON.parse(data);
 
-        // Add whatever validation is necessary I don't know yet
-        // Maybe some input sanitization and length checks, but for now just check if it exists
-        if (data["username"]) {
-            //console.log("Lobby owner set their username to: " + data["username"]);
+        const usernameResult = usernameSchema.safeParse(data["username"]);
+        
+        // Check there is a username field in the json
+        if (usernameResult.success) {
+            
+            // Add whatever validation is necessary I don't know yet
+            // Maybe some input sanitization and length checks, but for now just check if it exists
+
             // Turns off the message listener so it doesn't call handleOwnerUsernameMessage
             ws.off('message', handleOwnerUsernameMessage);
-            lobby.setOwnerNameAndInitialisePlayersMap(data["username"]);
+            lobby.setOwnerNameAndInitialisePlayersMap(usernameResult.data);
             // Without this the lobby won't be visible to other players
             lobby.setLobbyOpen(true);
             startGameConnection(ws, lobby, uuid);
         } else {
             ws.send(JSON.stringify({ "invalidUsername": true, "error": "Invalid username" }));
+            /*
+            if (!usernameResult.success) {
+                ws.send(JSON.stringify({ "error": "Invalid username format" }));
+                ws.close();
+                return;
+            }
+                */
         }
     }
 
@@ -282,9 +316,10 @@ function startPlayerNameConnection(ws, lobby, uuid) {
 
         // Add whatever validation is necessary I don't know yet
         // Maybe some input sanitization and length checks, but for now just check if it exists
-        if (data["username"]) {
+        const usernameResult = usernameSchema.safeParse(data["username"]);
+        if (usernameResult.success) {
             ws.off('message', handlePlayerUsernameMessage);
-            lobby.addPlayer(uuid, data["username"]);
+            lobby.addPlayer(uuid, usernameResult.data);
             startGameConnection(ws, lobby, uuid);
         } else {
             ws.send(JSON.stringify({ "invalidUsername": true, "error": "Invalid username" }));
@@ -371,59 +406,80 @@ function startGameConnection(ws, lobby, uuid) {
 function handlePlayerMessage(ws, data, lobby, game, uuid) {
     console.log('Received: %s', data);
     data = JSON.parse(data);
+
+    const generalMessageSchema = z.object({
+        startGame: z.boolean().optional(),
+        chosenResponseCardIndex: z.int().min(0).max(game.getNumberOfWhiteCards() - 1).optional(),
+        chosenResponseCardOwner: z.uuid().optional(),
+        getWhiteCard: z.boolean().optional(),
+        numberOfCards: z.int().min(1).max(10).optional(),
+        ping: z.boolean().optional(),
+        // This one I think can be an array of strings or indexes so I will need to change this
+        //chosenPlayerCards: z.array(z.string()).optional()
+        chosenPlayerCards: z.array(z.union([z.string().trim().min(0).max(200).regex(/^[a-zA-Z0-9_]+$/), z.number().int().min(0).max(game.getNumberOfWhiteCards() - 1)])).optional()
+    });
     
+    const safeData = generalMessageSchema.safeParse(data);
 
-    // Handles when the Card Zar chooses a winner for the round
-    if (game.getCardZar() === uuid && data["chosenResponseCardOwner"] && game.getIsCardZarsTurn()) {
-        game.chooseRoundWinner(data);
-    }
+    if (safeData.success) {
 
-    // Add whatever validation is necessary I don't know yet
-    // Maybe some input sanitization and length checks, but for now just check if it exists
-    // Handles when a player chooses their response card(s) for the round
-    if (game.getCardZar() !== uuid && data["chosenPlayerCards"] && !game.getIsCardZarsTurn()) {
-        game.addToWhiteCardResponses(uuid, data["chosenPlayerCards"]);
-    }
-
-    // Could do this by just seeing how many cards the player sent and sending that many immediately
-    // after the player has sent them
-    // Handles when a player requests new white card(s) from the server
-    if (data["getWhiteCard"]) {
-        console.log(JSON.stringify(data));
-        ws.send(JSON.stringify({ "newPlayerCard(s)": game.getRandomWhiteCardDeck(data["numberOfCards"]) }));
-    }
-
-    // Handles when the lobby owner changes the game settings
-    if (lobby.getOwnerUuid() === uuid && data["gameMode"]) {
-        lobby.setGameMode(data["gameMode"]);
-        lobby.setMaxNumberOfPlayers(data["maxNumOfPlayers"]);
-        // Add input validation and sanitisation here for the lobby password
-        lobby.setPassword(data["lobbyPassword"]);
-    }
-
-    // Handles when the lobby owner changes the number of players allowed in the lobby
-    if (lobby.getOwnerUuid() === uuid && data["changeNumberOfPlayers"]) {
-        lobby.setMaxNumberOfPlayers(data["changeNumberOfPlayers"]);
-    }
-
-    // Handles when the lobby owner changes the lobby password
-    // Validate the password here, maybe check if it's empty or too long or something
-    if (lobby.getOwnerUuid() === uuid && data["changeLobbyPassword"]) {
-        console.log("Lobby password change requested: " + data["password"]);
-        if (data["password"] === "") {
-            lobby.setPassword("");
-            lobby.setHasPassword(false);
-            console.log("Lobby password removed");
-        } else {
-            lobby.setPassword(data["password"]);
-            lobby.setHasPassword(true);
-            console.log("Lobby password changed to: " + data["password"]);
+        // Handles when the Card Zar chooses a winner for the round
+        if (game.getCardZar() === uuid && data["chosenResponseCardOwner"] && game.getIsCardZarsTurn()) {
+            game.chooseRoundWinner(data);
         }
-    }
 
-    // Handles when the lobby owner starts the game
-    if (lobby.getOwnerUuid() === uuid && data["startGame"]) {
-        game.startGame();
+        // Add whatever validation is necessary I don't know yet
+        // Maybe some input sanitization and length checks, but for now just check if it exists
+        // Handles when a player chooses their response card(s) for the round
+        if (game.getCardZar() !== uuid && data["chosenPlayerCards"] && !game.getIsCardZarsTurn()) {
+            game.addToWhiteCardResponses(uuid, data["chosenPlayerCards"]);
+        }
+
+        // Could do this by just seeing how many cards the player sent and sending that many immediately
+        // after the player has sent them
+        // Handles when a player requests new white card(s) from the server
+        if (data["getWhiteCard"]) {
+            console.log(JSON.stringify(data));
+            ws.send(JSON.stringify({ "newPlayerCard(s)": game.getRandomWhiteCardDeck(data["numberOfCards"]) }));
+        }
+
+        // Handles when the lobby owner changes the game settings
+        if (lobby.getOwnerUuid() === uuid && data["gameMode"]) {
+            lobby.setGameMode(data["gameMode"]);
+            lobby.setMaxNumberOfPlayers(data["maxNumOfPlayers"]);
+            // Add input validation and sanitisation here for the lobby password
+            lobby.setPassword(data["lobbyPassword"]);
+        }
+
+        // Handles when the lobby owner changes the number of players allowed in the lobby
+        if (lobby.getOwnerUuid() === uuid && data["changeNumberOfPlayers"]) {
+            lobby.setMaxNumberOfPlayers(data["changeNumberOfPlayers"]);
+        }
+
+        // Handles when the lobby owner changes the lobby password
+        // Validate the password here, maybe check if it's empty or too long or something
+        if (lobby.getOwnerUuid() === uuid && data["changeLobbyPassword"]) {
+            console.log("Lobby password change requested: " + data["password"]);
+            if (data["password"] === "") {
+                lobby.setPassword("");
+                lobby.setHasPassword(false);
+                console.log("Lobby password removed");
+            } else {
+                lobby.setPassword(data["password"]);
+                lobby.setHasPassword(true);
+                console.log("Lobby password changed to: " + data["password"]);
+            }
+        }
+
+        // Handles when the lobby owner starts the game
+        if (lobby.getOwnerUuid() === uuid && data["startGame"]) {
+            game.startGame();
+        }
+
+    } else {
+        ws.send(JSON.stringify({ "error": "Invalid message format" }));
+        console.log("Invalid message format: " + JSON.stringify(data));
+        //ws.close();
     }
 }
 

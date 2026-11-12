@@ -59,6 +59,10 @@ class CAHGame extends EventEmitter {
         //console.log(this.whiteCardPacks);
     }
 
+    getNumberOfWhiteCards() {
+        return this.whiteCardPacks.length;
+    }
+
     getIsCardZarsTurn() {
         return this.isCardZarsTurn;
     }
@@ -250,7 +254,12 @@ class CAHGame extends EventEmitter {
         for (let i = 0; i < responsesArray.length; i++) {
             for (let j = 0; j < responsesArray[i].length; j++) {
                 //responsesArray[i][j] = this.getWhiteCardText(responsesArray[i][j]);
-                responsesText.push({ "playerUuid": responseOwners[i], "cardText": this.whiteCardPacks[responsesArray[i][j]] });
+                // If to check if its an index or a string
+                if (Number.isInteger(responsesArray[i][j])) {
+                    responsesText.push({ "playerUuid": responseOwners[i], "cardText": this.whiteCardPacks[responsesArray[i][j]] });
+                } else {
+                    responsesText.push({ "playerUuid": responseOwners[i], "cardText": responsesArray[i][j] });
+                }
             }
         }
        
@@ -308,9 +317,9 @@ class CAHGame extends EventEmitter {
         this.whiteCardResponses.clear();
     }
 
-    addToWhiteCardResponses(playerUuid, cardIndexes) {
-        this.whiteCardResponses.set(playerUuid, cardIndexes);
-        this.emit("responseCardReceived", { "numberOfResponseCards": cardIndexes.length });
+    addToWhiteCardResponses(playerUuid, cardIndexesOrStrings) {
+        this.whiteCardResponses.set(playerUuid, cardIndexesOrStrings);
+        this.emit("responseCardReceived", { "numberOfResponseCards": cardIndexesOrStrings.length });
         if (this.checkAllPlayersSubmitted()) {
             this.endTurnEarly(this.cardZarsTurn);
         }
